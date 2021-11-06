@@ -5,7 +5,7 @@ import Navigate from "./Navigate";
 export default function App() {
   return (
     <div>
-      <Body />
+      <Body /> 
       <Navigate />
     </div>
   );
