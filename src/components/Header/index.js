@@ -13,11 +13,12 @@ import HamburguerMenu from '../common/SideMenuBar'
 import {HamburguerButton} from './style-hamburguer-button'
 import Button from '@restart/ui/esm/Button';
 
+
 function Header() {
   const [showHamburguer, setShowHamburguer] = useState(false);
   const history = useHistory();
   const onClickHamburguer = (e) => setShowHamburguer(!showHamburguer);
-  const {currentUser,logout}=useAuth();
+  const {logout,getPhoto}=useAuth();
   async function handleLogout(e){
     e.preventDefault();
 
@@ -33,14 +34,14 @@ function Header() {
   <>
     <Container>
 
-      <HamburguerButton show={showHamburguer} onClick={(e) => onClickHamburguer(e)}>
+      <HamburguerButton style={{lineHeight:"100%"}} show={showHamburguer} onClick={(e) => onClickHamburguer(e)}>
         <div></div>
         <div></div>
         <div></div>
       </HamburguerButton>
       
-      <Link to="/" className="fw-bold">LMS-DUT</Link>
-
+      <Link to="/" className="fw-bold" style={{margin:"0 15px"}}>LMS-DUT</Link>
+      <img style={{height:"40px",width:"40px"}} src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTNvoNPGPqvJJXxvq64QtFFp6CreUzVxEoFy5vh-IuzhK6O4y0VQNP6l7DcskyrVPjxESo&usqp=CAU"/>
       <div className="groupButtons">
 
         <HeaderButton className="addBtn">
@@ -51,9 +52,9 @@ function Header() {
           <IoMdApps size={25}  color="rgb(77, 72, 72)"/>
         </HeaderButton>
 
-        <HeaderAvatar className="imgAvatar" src={currentUser.photoURL} alt="Adorable Avatar!"/>
+        <HeaderAvatar className="imgAvatar" src={getPhoto()} alt="Unknown"/>
 
-        <Button onClick={handleLogout}>Logout</Button>
+        <Button className="fw-bold  btn btn-light" style={{padding:"10px",marginRight:"20px"}} onClick={handleLogout}>Logout</Button>
 
       </div>
 

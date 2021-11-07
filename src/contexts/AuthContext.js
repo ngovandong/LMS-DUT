@@ -40,6 +40,12 @@ export function AuthProvider({ children }) {
     var provider = new GoogleAuthProvider();
     return signInWithPopup(auth,provider);
   }
+  function getPhoto(){
+    if(currentUser.photoURL){
+      return currentUser.photoURL;
+    }
+    return "https://www.seekpng.com/png/detail/46-462959_unknown-person-icon-png-download-single-people-logo.png";
+  }
   const value = {
     currentUser,
     login,
@@ -48,6 +54,7 @@ export function AuthProvider({ children }) {
     resetPassword,
     updateProfile,
     signInWithGoogle,
+    getPhoto
   };
   useEffect(() => {
     const unsubcribe = auth.onAuthStateChanged((user) => {

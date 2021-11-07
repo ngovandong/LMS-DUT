@@ -4,7 +4,7 @@ export default [
     id: 1,
     subject: "Đồ Họa Máy Tính",
     teacher_name: "Nguyễn Tấn Khôi",
-    avatar: "https://miro.medium.com/max/2000/1*9g2hSDNT3Cao2vh1HMO35A.jpeg",
+    avatar: "https://static.turbosquid.com/Preview/2018/07/06__16_20_45/math_object0015signature.jpgD1A744D3-B6E1-44C6-9819-8F02199DBE24Large.jpg",
     background: "https://gstatic.com/classroom/themes/SocialStudies.jpg"
   },
   {

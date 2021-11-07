@@ -13,6 +13,8 @@ import {
 
 // API
 import api from '../../../services/tasks'
+import logo from "../../../img/logo1.png";
+
 
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -38,5 +40,6 @@ export default ({hide}) => {
       }
 
     </WrapperMenu>
+    <img src={logo} style={{ maxWidth:"100%",width: "auto", height: "100%" }} alt="" />
   </Menu>)
 }
