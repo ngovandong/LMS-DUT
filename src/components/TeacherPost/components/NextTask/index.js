@@ -6,9 +6,10 @@ import styled from 'styled-components'
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 22vw;
+  width: 20%;
   max-width: 250px;
   height: max-content;
+  background: snow;
 
   border: 1px solid #ccc;
   padding: 25px;
@@ -52,8 +53,6 @@ export default () => {
   return (
   <Wrapper>
     <Title>Class code</Title>
-    <Informations>ldiehff
-</Informations>
     <br/>
     <SeeAllTasks href="">No work due soon</SeeAllTasks>
   </Wrapper>

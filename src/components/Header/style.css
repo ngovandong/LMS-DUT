@@ -1,0 +1,17 @@
+.sub {
+  border: 0;
+  cursor: pointer;
+  text-align: center;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+.sub:hover {
+  background: #0000001a;
+}
+.fulH {
+  text-decoration: none !important;
+  font-size: 18px !important;
+  padding-top: 10px;
+  border-bottom: 0 !important;
+ 
+}

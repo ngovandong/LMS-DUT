@@ -6,7 +6,7 @@ import Login from "./components/start/Login";
 import PrivateRoute from "./components/start/PrivateRoute";
 import ForgotPassword from "./components/start/ForgotPassword";
 import UpdateProfile from "./components/start/updateProfile";
-import Subjects from './components/Subjects';
+import Classes from './components/Classes';
 import TeacherPost from './components/TeacherPost';
 
 export default function Navigate() {
@@ -19,8 +19,8 @@ export default function Navigate() {
             <Route path="/signup" component={Signup} />
             <Route path="/forgot-password" component={ForgotPassword} />
             <PrivateRoute path="/update-profile" component={UpdateProfile} />
-            <PrivateRoute path="/tasks/:id"  component={TeacherPost} />
-            <PrivateRoute path="/" component={Subjects} />
+            <PrivateRoute path="/class/:id"  component={TeacherPost} />
+            <PrivateRoute path="/" component={Classes} />
           </Switch>
         </AuthProvider>
       </BrowserRouter>

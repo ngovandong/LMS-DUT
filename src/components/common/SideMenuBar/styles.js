@@ -16,7 +16,7 @@ export const Menu = styled.div`
 export const WrapperMenu = styled.ul`
   border-right: 1px solid #ccc;
   height: auto;
-
+  padding-left: 10px;
   display: flex;
   flex-direction: column;
 

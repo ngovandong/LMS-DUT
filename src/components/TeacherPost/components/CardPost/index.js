@@ -1,11 +1,11 @@
 import React from 'react';
 
 // ICONS
-import { IoMdLink } from 'react-icons/io'
+// import { IoMdLink } from 'react-icons/io'
 
 // IMPORTING STYLES
 import { Wrapper , Header , Avatar , Informations, PostOwner
-       , DateOfPost , Description, ButtonCopyLink } from './styles'
+       , DateOfPost , Description } from './styles'
 
 // COMPONENTS
 import Comments from '../Comments'
@@ -29,9 +29,9 @@ export default ({data}) => {
           <DateOfPost>{data.date}</DateOfPost>
         </Informations>
 
-        <ButtonCopyLink>
+        {/* <ButtonCopyLink>
           <IoMdLink size={25} color="#4e4e4e" />
-        </ButtonCopyLink>
+        </ButtonCopyLink> */}
       </Header>
 
       <Description> {data.description}  </Description>

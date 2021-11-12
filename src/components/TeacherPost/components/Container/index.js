@@ -11,9 +11,9 @@ import api from '../../../../services/posts'
 
 const Wrapper = styled.div`
   display: flex;
-  max-width: 80vw;
+  justify-content: space-between;
+  width: 100% ;
   margin: 0 auto;
-  flex-wrap: wrap;
 `;
 
 
@@ -34,8 +34,9 @@ export default (props) => {
       <NextTask />
 
       {/* BUSCANDO POST COM ID_SUBJECT IGUAL AO ID PASSADO NA URL COMO PARAMETRO */}
-      {postOfIndex.map((item) => (item.id_subject === props.id) ? <CardPost key={item.id_subject} data={item}/>  : "" )}
-
+      <div style={{width:"75%"}}>
+      {postOfIndex.map((item) => (item.id_subject == props.id) ? <CardPost key={item.id_subject} data={item}/>  : "" )}
+      </div>
     </Wrapper>
     </>
   );

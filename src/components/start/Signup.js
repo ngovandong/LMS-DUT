@@ -10,6 +10,7 @@ import logo from "../../img/logo1.png";
 export default function Signup() {
   const emailRef = useRef();
   const passwordRef = useRef();
+  const usernameRef=useRef();
   const passwordConfirmRef = useRef();
   const { signup, signInWithGoogle } = useAuth();
   const [error, setError] = useState("");
@@ -24,11 +25,10 @@ export default function Signup() {
     try {
       setError("");
       setLoading(true);
-      await signup(emailRef.current.value, passwordRef.current.value);
+      await signup(emailRef.current.value, passwordRef.current.value,usernameRef.current.value);
       history.push("/login");
     } catch (error) {
-      console.log(error);
-      setError("Fail to create an account!");
+      setError(error.message);
     }
     setLoading(false);
   }
@@ -59,6 +59,10 @@ export default function Signup() {
               <h2 className=" text-center mb-4">Sign Up</h2>
               {error && <Alert variant="danger">{error}</Alert>}
               <Form onSubmit={handleSubmit}>
+                <Form.Group id="usernameRef">
+                  <Form.Label>User name</Form.Label>
+                  <Form.Control type="text" ref={usernameRef} required />
+                </Form.Group>
                 <Form.Group id="email">
                   <Form.Label>Email</Form.Label>
                   <Form.Control type="email" ref={emailRef} required />

@@ -8,8 +8,7 @@ export const CardContainer = styled.div`
   border-radius: 10px 10px 0 0;
   border: 1px solid #ccc;
   position: relative;
-
-
+  
   cursor: pointer;
   transition: box-shadow 0.2s;
 
