@@ -63,9 +63,9 @@ return (
 <Name>{data.person_name}  <Date>{data.date}</Date> </Name>
     <CommentText>{data.comment}</CommentText>
 
-    <ReplyButton>
+    {/* <ReplyButton>
       <IoIosUndo size={20} color="#4e4e4e"/>
-    </ReplyButton>
+    </ReplyButton> */}
   </Wrapper>
 );
 }

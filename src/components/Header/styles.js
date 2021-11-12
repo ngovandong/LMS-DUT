@@ -2,15 +2,17 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   display: flex;
+  justify-content: space-between;
   max-width: 100%;
-  height: 60px;
+  height: 64px;
   align-items: center;
-  padding-left: 20px;
-  background:snow;
+  padding: 0 20px;
+  background-color: #FFFFFF;
   z-index: 10;
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+
 
   position: fixed;
-  background: snow;
   width: 100vw;
   border-bottom: 1px solid #ccc;
   top: 0;

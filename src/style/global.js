@@ -12,7 +12,7 @@ export default createGlobalStyle`
 
     body{
       padding-top: 5.7rem;
-      background: snow;
+      background: #fff;
       font-family: 'Roboto', sans-serif;
 
     }

@@ -5,19 +5,17 @@ import styled from 'styled-components';
 import { IoIosArrowDown } from 'react-icons/io'
 
 const Banner = styled.div`
-  max-width: 80vw;
-  margin: 40px auto;
+  margin: 0 auto 40px;
   border: 1px solid #ccc;
   border-radius: 8px;
 `;
 
 const Header = styled.div`
   position: relative;
-  max-width: 80vw;
+  height:240px;
   background: url(${({background}) => true ? (background): (background)});
   background-size: cover;
   background-repeat: no-repeat;
-
   border-radius: 8px;
 
 
@@ -49,7 +47,6 @@ const Teacher = styled.p`
 
 const DetailButton = styled.button`
   position: absolute;
-  bottom: 10px;
   left: 50%;
 
   rotate: ${({status}) => status ? "180deg" : "0deg"};
@@ -83,9 +80,9 @@ export default (props) =>{
 
   return (
     <Banner>
-      <Header background={props.background}>
-        <Title>{props.name}</Title>
-        <Teacher>{props.teacher}</Teacher>
+      <Header background={props.data.background}>
+        <Title>{props.data.name}</Title>
+        <Teacher>{props.data.creatorName}</Teacher>
 
         <DivButton>
           <DetailButton status={showDetail} onClick={ (e) => onClick(e)}>
@@ -93,14 +90,12 @@ export default (props) =>{
           </DetailButton>
         </DivButton>
 
-
-
       </Header>
       {
         showDetail &&
         <DetailBanner>
-          <p><strong>Subject:</strong> {props.name} </p>
-          <p><strong>Credit:</strong> {props.id} </p>
+          <p><strong>Credits:</strong> {props.data.credits} </p>
+          <p><strong>Join code: </strong>{props.id} </p>
         </DetailBanner>
       }
     </Banner>

@@ -4,7 +4,7 @@ export const ContainerStyle  = styled.div`
   display: flex;
   max-width: 100%;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: left;
 
    /* MEDIA QUERIES */
 
