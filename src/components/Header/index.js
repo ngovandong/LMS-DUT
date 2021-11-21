@@ -2,16 +2,17 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoMdSettings } from "react-icons/io";
 import { HeaderButton, Container } from "./styles";
-import { Navbar, Nav, Tabs, Tab } from "react-bootstrap";
 // MENUS
 import HamburguerMenu from "../common/SideMenuBar";
-
 import { HamburguerButton } from "./style-hamburguer-button";
 import My from "./my";
 import ClassGroup from "./classGroup";
 import "./style.css";
-import AddClass from '../common/Class/addClass'
-import JoinClass from '../common/Class/joinClass'
+import AddClass from "../Modal/AddClass";
+import JoinClass from "../Modal/JoinClass";
+import NavBar from "./NavBar";
+
+
 function Header() {
   const [showHamburguer, setShowHamburguer] = useState(false);
   const onClickHamburguer = (e) => setShowHamburguer(!showHamburguer);
@@ -34,11 +35,13 @@ function Header() {
 
           <Link
             to="/"
-            className="fw-bold"
             style={{
               margin: "0 15px",
               textDecoration: "none",
-              fontSize: "20px",
+              fontSize: "1.375rem",
+              fontWeight: "400",
+              lineHeight: "1.75rem",
+              color: "#3c4043",
             }}
           >
             LMS-DUT
@@ -50,14 +53,14 @@ function Header() {
         </div>
       </Container>
 
-      <HamburguerMenu hide={showHamburguer} />
+      <HamburguerMenu hide={showHamburguer} handleClick={(e) => onClickHamburguer(e)} />
     </>
   );
 }
 
 export default Header;
 
-export function HeaderClass() {
+export function HeaderClass(props) {
   const [showHamburguer, setShowHamburguer] = useState(false);
   const onClickHamburguer = (e) => setShowHamburguer(!showHamburguer);
 
@@ -77,44 +80,21 @@ export function HeaderClass() {
 
           <Link
             to="/"
-            className="fw-bold"
             style={{
               margin: "0 15px",
               textDecoration: "none",
-              fontSize: "20px",
+              fontSize: "1.375rem",
+              fontWeight: "400",
+              lineHeight: "1.75rem",
+              color: "#3c4043",
             }}
           >
             LMS-DUT
           </Link>
         </div>
 
-        <Nav variant="tabs" defaultActiveKey="/home"  className="fulH">
-          <Nav.Item >
-            <Nav.Link className="fulH" active={true}>Stream</Nav.Link>
-          </Nav.Item>
-          <Nav.Item >
-            <Nav.Link className="fulH"  >ClassWork</Nav.Link>
-          </Nav.Item>
-          <Nav.Item >
-            <Nav.Link className="fulH" >People</Nav.Link>
-          </Nav.Item>
-          <Nav.Item >
-            <Nav.Link className="fulH" eventKey="disabled" disabled>
-              Disabled
-            </Nav.Link>
-          </Nav.Item>
-        </Nav>
-        {/* <div className="fulH">
-          <Tabs
-            defaultActiveKey="profile"
-            id="uncontrolled-tab-example"
-            className=" mt-3"
-          >
-            <Tab eventKey="home" title="Home"></Tab>
-            <Tab eventKey="profile" title="Profile"></Tab>
-            <Tab eventKey="contact" title="Contact" disabled></Tab>
-          </Tabs>
-        </div> */}
+        <NavBar id={props.id} />
+
         <div style={{ display: "flex", height: "100%", alignItems: "center" }}>
           <HeaderButton className="addBtn">
             <IoMdSettings size={25} color="rgb(77, 72, 72)" />
@@ -123,7 +103,8 @@ export function HeaderClass() {
         </div>
       </Container>
 
-      <HamburguerMenu hide={showHamburguer} />
+      <HamburguerMenu hide={showHamburguer} handleClick={(e) => onClickHamburguer(e)} />
     </>
   );
 }
+

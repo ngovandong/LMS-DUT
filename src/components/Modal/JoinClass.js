@@ -1,8 +1,8 @@
 import { useRecoilState } from "recoil";
-import { joinDialogAtom } from "../../../utils/atoms";
+import { joinDialogAtom } from "../../utils/atoms";
 import { Form, Button, Modal,Alert } from "react-bootstrap";
 import React, { useRef, useState } from "react";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function JoinClass() {
   const classCode = useRef();

@@ -10,23 +10,23 @@ import { Wrapper , Header , Avatar , Informations, PostOwner
 // COMPONENTS
 import Comments from '../Comments'
 import InputComment from '../InputComment'
-
+import getTime from '../../../../funtions/getRelativeTime'
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default ({data}) => {
+export default (props) => {
 
-  const comments = data.comments;
+  const comments = props.data.comments;
 
   return (
     <>
     <Wrapper>
       <Header>
-        <Avatar src={data.avatar}/>
+        <Avatar src={props.data.authorImg}/>
 
         <Informations>
 
-          <PostOwner>{data.teacher}</PostOwner>
-          <DateOfPost>{data.date}</DateOfPost>
+          <PostOwner>{props.data.authorName}</PostOwner>
+          <DateOfPost>{getTime(props.data.date)}</DateOfPost>
         </Informations>
 
         {/* <ButtonCopyLink>
@@ -34,15 +34,15 @@ export default ({data}) => {
         </ButtonCopyLink> */}
       </Header>
 
-      <Description> {data.description}  </Description>
+      <Description> {props.data.message}  </Description>
 
-      {comments.map( (item) => <Comments key={item.id_comment} data={item} /> )}
+      {comments.map( (item,index) => <Comments key={index} data={item} /> )}
 
       {/* <Comments />
       <Comments />
       <Comments /> */}
 
-      <InputComment/>
+      <InputComment announceID={props.announceID}/>
     </Wrapper>
     </>
   );

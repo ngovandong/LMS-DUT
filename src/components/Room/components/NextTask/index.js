@@ -9,7 +9,6 @@ const Wrapper = styled.div`
   width: 20%;
   max-width: 250px;
   height: max-content;
-  background: snow;
 
   border: 1px solid #ccc;
   padding: 25px;

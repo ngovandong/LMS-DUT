@@ -14,7 +14,7 @@ export const HamburguerButton =  styled.div`
   div{
     height: 5px;
     width: 24px;
-    background: rgb(77,72,72);
+    background: rgba(0, 0, 0, 0.54);
     margin-top: 3px;
     border-radius: 2px;
 

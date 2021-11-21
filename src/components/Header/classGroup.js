@@ -18,7 +18,7 @@ export default function ClassGroup() {
     setTarget(event.target);
   };
 
-  function handleCreate() {
+  async function handleCreate() {
     setCreateOpened(true);
     setShow(false);
   }
@@ -29,7 +29,8 @@ export default function ClassGroup() {
 
   return (
     <div ref={ref}>
-      <HeaderButton className="addBtn" onClick={handleClick} onBlur={()=>setShow(false)} >
+      <HeaderButton className="addBtn" onClick={handleClick}  >
+      {/* onBlur={()=>setShow(false)} */}
         <IoMdAdd size={25} color="rgb(77, 72, 72)" />
       </HeaderButton>
       <Overlay

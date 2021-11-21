@@ -5,7 +5,8 @@ export const ContainerStyle  = styled.div`
   max-width: 100%;
   flex-wrap: wrap;
   justify-content: left;
-
+  align-seft: center;
+  
    /* MEDIA QUERIES */
 
    @media (max-width: 450px)
@@ -15,6 +16,5 @@ export const ContainerStyle  = styled.div`
     }
   }
 `;
-
 
 

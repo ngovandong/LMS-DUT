@@ -7,7 +7,7 @@ import PrivateRoute from "./components/start/PrivateRoute";
 import ForgotPassword from "./components/start/ForgotPassword";
 import UpdateProfile from "./components/start/updateProfile";
 import Classes from './components/Classes';
-import TeacherPost from './components/TeacherPost';
+import Room from './components/Room';
 
 export default function Navigate() {
   return (
@@ -19,7 +19,7 @@ export default function Navigate() {
             <Route path="/signup" component={Signup} />
             <Route path="/forgot-password" component={ForgotPassword} />
             <PrivateRoute path="/update-profile" component={UpdateProfile} />
-            <PrivateRoute path="/class/:id"  component={TeacherPost} />
+            <PrivateRoute exact path="/class/:id" component={Room} />
             <PrivateRoute path="/" component={Classes} />
           </Switch>
         </AuthProvider>

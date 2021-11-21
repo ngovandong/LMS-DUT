@@ -1,8 +1,8 @@
 import { useRecoilState } from "recoil";
-import { createDialogAtom } from "../../../utils/atoms";
+import { createDialogAtom } from "../../utils/atoms";
 import { Form, Button, Modal, Alert } from "react-bootstrap";
-import React, { useRef, useState, useEffect } from "react";
-import { useAuth } from "../../../contexts/AuthContext";
+import React, { useRef, useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function AddClass() {
   const className = useRef();

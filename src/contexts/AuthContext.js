@@ -17,15 +17,17 @@ import {
   where,
   getDocs,
   getDoc,
-  orderBy,
-  limit,
-  onSnapshot,
-  setDoc,
   updateDoc,
   doc,
-  serverTimestamp,
+  deleteDoc
 } from "firebase/firestore";
+
+import { getStorage, ref, uploadBytes, getDownloadURL,deleteObject } from "firebase/storage";
+
+import {errorDialogAtom,errorMessage} from '../utils/atoms'
+
 import uknown from "../img/unknownPeople.png";
+import { useRecoilState } from "recoil";
 const AuthContext = React.createContext();
 
 export function useAuth() {
@@ -34,7 +36,7 @@ export function useAuth() {
 
 function getBackground() {
   const a = Math.floor(Math.random() * 12);
-  const b = a % 6;
+  const b = a % 7;
   switch (b) {
     case 0:
       return "https://gstatic.com/classroom/themes/img_reachout.jpg";
@@ -48,6 +50,8 @@ function getBackground() {
       return "https://gstatic.com/classroom/themes/img_code.jpg";
     case 5:
       return "https://gstatic.com/classroom/themes/img_read.jpg";
+    case 7:
+      return "https://gstatic.com/classroom/themes/img_backtoschool.jpg";
     default:
       break;
   }
@@ -57,6 +61,8 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
   const db = getFirestore();
+  const [show,setShow]= useRecoilState(errorDialogAtom);
+    const [message,setMes]= useRecoilState(errorMessage);
   async function signup(email, password, name) {
     const result = await createUserWithEmailAndPassword(auth, email, password);
     const user = result.user;
@@ -68,8 +74,8 @@ export function AuthProvider({ children }) {
       enrolledClassrooms: [],
     });
   }
-  function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password);
+  async function login(email, password) {
+    await signInWithEmailAndPassword(auth, email, password);
   }
   function updateProfile(password) {
     return updatePassword(currentUser, password);
@@ -98,7 +104,6 @@ export function AuthProvider({ children }) {
         });
       }
     } catch (err) {
-      alert(err.message);
       console.log(err.message);
     }
   }
@@ -109,53 +114,52 @@ export function AuthProvider({ children }) {
     return uknown;
   }
   async function createClass(name, credits) {
-    const userRef = await getDocs(
+    const background = getBackground();
+    const docRef = await getDocs(
       query(collection(db, "users"), where("uid", "==", currentUser.uid))
     );
-    const userID = userRef.docs[0].id;
-    const userData = userRef.docs[0].data();
-    const background = getBackground();
+    const ID = docRef.docs[0].id;
+    const userDB = docRef.docs[0].data();
     const newClass = await addDoc(collection(db, "classes"), {
-      creatorUid: userData.uid,
+      creatorUid: userDB.uid,
       name: name,
       credits: credits,
       background: background,
-      creatorName: userData.name,
-      creatorPhoto: userData.photo,
-      posts: [],
+      creatorName: userDB.name,
+      creatorPhoto: userDB.photo,
       users: [
         {
-          uid: userData.uid,
-          name: userData.name,
-          photo: userData.photo,
+          uid: userDB.uid,
+          name: userDB.name,
+          photo: userDB.photo,
         },
       ],
     });
 
     // add to current user's class list
 
-    let userClasses = userData.enrolledClassrooms;
+    let userClasses = userDB.enrolledClassrooms;
     userClasses.push({
       id: newClass.id,
       name: name,
-      creatorName: userData.name,
-      creatorPhoto: userData.photo,
+      creatorName: userDB.name,
+      creatorPhoto: userDB.photo,
       background: background,
     });
-    const docRef = await doc(db, "users", userID);
-    await updateDoc(docRef, {
+    const userRef = await doc(db, "users", ID);
+    await updateDoc(userRef, {
       enrolledClassrooms: userClasses,
     });
   }
   async function joinClass(code) {
     const classRef = doc(db, "classes", code);
     const classSnap = await getDoc(classRef);
-    const userRef = await getDocs(
+    const docRef = await getDocs(
       query(collection(db, "users"), where("uid", "==", currentUser.uid))
     );
-    const userId = userRef.docs[0].id;
-    const userData = userRef.docs[0].data();
-    const userClassrooms = userData.enrolledClassrooms;
+    const ID = docRef.docs[0].id;
+    const userDB = docRef.docs[0].data();
+    const userClassrooms = userDB.enrolledClassrooms;
     const isalready = userClassrooms.some((ele) => ele.id === code);
     if (!isalready) {
       if (classSnap.exists()) {
@@ -168,15 +172,15 @@ export function AuthProvider({ children }) {
           creatorPhoto: classData.creatorPhoto,
           background: classData.background,
         });
-        const docRef = await doc(db, "users", userId);
+        const docRef = await doc(db, "users", ID);
         await updateDoc(docRef, {
           enrolledClassrooms: userClassrooms,
         });
         const users = classData.users;
         users.push({
-          uid: userData.uid,
-          name: userData.name,
-          photo: userData.photo,
+          uid: userDB.uid,
+          name: userDB.name,
+          photo: userDB.photo,
         });
         await updateDoc(classRef, {
           users: users,
@@ -186,6 +190,119 @@ export function AuthProvider({ children }) {
       }
     } else {
       throw Error("Class already exist");
+    }
+  }
+  async function deleteMember(Uid, classID) {
+    const classRef = doc(db, "classes", classID);
+    const classSnap = await getDoc(classRef);
+    const classData = await classSnap.data();
+
+    const newMembers = [];
+    classData.users.forEach((ele) => {
+      if (ele.uid !== Uid) {
+        newMembers.push(ele);
+      }
+    });
+    await updateDoc(classRef, {
+      users: newMembers,
+    });
+
+    const docRef = await getDocs(
+      query(collection(db, "users"), where("uid", "==", Uid))
+    );
+    const ID = docRef.docs[0].id;
+    const userData = docRef.docs[0].data();
+    const enrolled = userData.enrolledClassrooms;
+    const newClasses = [];
+    enrolled.forEach((ele) => {
+      if (ele.id !== classID) {
+        newClasses.push(ele);
+      }
+    });
+    const userRef = doc(db, "users", ID);
+    await updateDoc(userRef, {
+      enrolledClassrooms: newClasses,
+    });
+  }
+
+  async function createAnnounce(message, classID) {
+    const docRef = await getDocs(
+      query(collection(db, "users"), where("uid", "==", currentUser.uid))
+    );
+    const userDB = docRef.docs[0].data();
+    await addDoc(collection(db, "announces"), {
+      message: message,
+      classID: classID,
+      authorImg: getPhoto(),
+      authorName: userDB.name,
+      date: new Date().getTime(),
+      comments: [],
+    });
+  }
+  async function createComment(message, announceID) {
+    const docRef = await getDocs(
+      query(collection(db, "users"), where("uid", "==", currentUser.uid))
+    );
+    const userDB = docRef.docs[0].data();
+    const annouceRef = doc(db, "announces", announceID);
+    const announceSnap = await getDoc(annouceRef);
+    const announce = announceSnap.data();
+    const comments = announce.comments;
+    comments.push({
+      name: userDB.name,
+      photo: userDB.photo,
+      message: message,
+      date: new Date().getTime(),
+    });
+    await updateDoc(annouceRef, {
+      comments: comments,
+    });
+  }
+  async function isInClass(id) {
+    const docRef = await getDocs(
+      query(collection(db, "users"), where("uid", "==", currentUser.uid))
+    );
+    const enrolled = docRef.docs[0].data().enrolledClassrooms;
+    const result = enrolled.some((ele) => ele.id === id);
+    return result;
+  }
+
+  async function uploadDoc(file, name, classID) {
+    const storage = await getStorage();
+    const storageRef = await ref(storage, `documents/${classID}/${name}`);
+    const snapshot = await uploadBytes(storageRef, file);
+    const refer = snapshot.ref;
+    const link = await getDownloadURL(refer);
+
+    const docRef = await getDocs(
+      query(collection(db, "documents"), where("name", "==", name))
+    );
+    console.log(docRef.docs.length);
+    if (docRef.docs.length > 0) {
+      throw new Error("File already exists!");
+    }
+    await addDoc(collection(db, "documents"), {
+      classID: classID,
+      linkDownload: link,
+      name: name,
+    });
+  }
+
+  async function deleteDocument(path,link) {
+
+    try {
+      const storage = getStorage();
+      // Create a reference to the file to delete
+      const document = ref(storage, path);
+      await deleteObject(document);
+      const docRef = await getDocs(
+        query(collection(db, "documents"), where("linkDownload", "==", link))
+      );
+      const ID=docRef.docs[0].id;
+      await deleteDoc(doc(db,"documents",ID));
+    } catch (error) {
+      setMes(error.message);
+      setShow(true);
     }
   }
   const value = {
@@ -200,11 +317,18 @@ export function AuthProvider({ children }) {
     getPhoto,
     createClass,
     joinClass,
+    createAnnounce,
+    createComment,
+    deleteMember,
+    isInClass,
+    uploadDoc,
+    deleteDocument,
   };
+
   useEffect(() => {
     const unsubcribe = auth.onAuthStateChanged((user) => {
       setCurrentUser(user);
-      setLoading(false);
+      setLoading(currentUser);
     });
     return unsubcribe;
   }, []);

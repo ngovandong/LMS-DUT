@@ -2,12 +2,9 @@ import styled from 'styled-components';
 
 // WRAPPER
 export const Wrapper = styled.section`
-  max-width: 55vw;
   min-height: 250px;
-  background: snow;
   border: 1px solid #ccc;
   border-radius: 8px;
-  margin-left: auto;
   margin-bottom: 20px;
   min-width: 10%;
   width: 100%;

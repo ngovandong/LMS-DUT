@@ -1,19 +1,14 @@
-import React from 'react'
-import styled from 'styled-components'
-
-// ICON
-import { IoIosUndo } from 'react-icons/io'
-
+import React from "react";
+import styled from "styled-components";
+import getTime from "../../../../funtions/getRelativeTime";
 
 const Wrapper = styled.div`
   position: relative;
   padding: 20px;
 
-
-  :hover button{
+  :hover button {
     visibility: visible;
   }
-
 `;
 
 const Avatar = styled.img`
@@ -23,7 +18,7 @@ const Avatar = styled.img`
 `;
 
 const Name = styled.span`
-  display:flex;
+  display: flex;
   align-items: center;
   position: absolute;
   top: 30px;
@@ -42,30 +37,34 @@ const Date = styled.span`
 const CommentText = styled.p`
   position: relative;
   margin-left: 50px;
-  margin-top: -10px;
+  margin-top: -5px;
   font-size: 0.85rem;
   color: #4e4e4e;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
 `;
 
-const ReplyButton = styled.button`
-  visibility: hidden;
-  position: absolute;
-  right: 5px;
-  top: 30px;
-`;
+// const ReplyButton = styled.button`
+//   visibility: hidden;
+//   position: absolute;
+//   right: 5px;
+//   top: 30px;
+// `;
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default ({data}) =>{
+export default ({ data }) => {
+  return (
+    <Wrapper>
+      <Avatar src={data.photo} />
+      <Name>
+        {data.name} <Date>{getTime(data.date)}</Date>{" "}
+      </Name>
+      <CommentText>{data.message}</CommentText>
 
-return (
-  <Wrapper>
-    <Avatar src={data.avatar} />
-<Name>{data.person_name}  <Date>{data.date}</Date> </Name>
-    <CommentText>{data.comment}</CommentText>
-
-    {/* <ReplyButton>
+      {/* <ReplyButton>
       <IoIosUndo size={20} color="#4e4e4e"/>
     </ReplyButton> */}
-  </Wrapper>
-);
-}
+    </Wrapper>
+  );
+};
