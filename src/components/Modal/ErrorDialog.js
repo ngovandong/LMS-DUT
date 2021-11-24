@@ -17,6 +17,7 @@ export default function ErrorDialog() {
         onHide={handleClose}
         backdrop="static"
         keyboard={false}
+        style={{zIndex:"93043"}}
       >
         <Modal.Header closeButton>
           <Modal.Title>Error</Modal.Title>

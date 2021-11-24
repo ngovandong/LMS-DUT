@@ -1,7 +1,7 @@
 import { useRecoilState } from "recoil";
 import { addDoc } from "../../utils/atoms";
 import { Form, Button, Modal, Alert } from "react-bootstrap";
-import React, { useRef, useState } from "react";
+import React, {  useState,useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function AddDoc(props) {
@@ -37,6 +37,10 @@ export default function AddDoc(props) {
       setName(e.target.files[0].name);
     }
   }
+
+  useEffect(() => {
+    
+  }, [])
   return (
     <>
       <Modal show={show} onHide={handleClose}>

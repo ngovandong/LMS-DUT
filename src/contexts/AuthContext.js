@@ -19,12 +19,18 @@ import {
   getDoc,
   updateDoc,
   doc,
-  deleteDoc
+  deleteDoc,
 } from "firebase/firestore";
 
-import { getStorage, ref, uploadBytes, getDownloadURL,deleteObject } from "firebase/storage";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 
-import {errorDialogAtom,errorMessage} from '../utils/atoms'
+import { errorDialogAtom, errorMessage } from "../utils/atoms";
 
 import uknown from "../img/unknownPeople.png";
 import { useRecoilState } from "recoil";
@@ -61,8 +67,8 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
   const db = getFirestore();
-  const [show,setShow]= useRecoilState(errorDialogAtom);
-    const [message,setMes]= useRecoilState(errorMessage);
+  const [show, setShow] = useRecoilState(errorDialogAtom);
+  const [message, setMes] = useRecoilState(errorMessage);
   async function signup(email, password, name) {
     const result = await createUserWithEmailAndPassword(auth, email, password);
     const user = result.user;
@@ -277,8 +283,8 @@ export function AuthProvider({ children }) {
     const docRef = await getDocs(
       query(collection(db, "documents"), where("name", "==", name))
     );
-    console.log(docRef.docs.length);
-    if (docRef.docs.length > 0) {
+
+    if (docRef.docs.length > 0 && docRef.docs[0].data().classID === classID) {
       throw new Error("File already exists!");
     }
     await addDoc(collection(db, "documents"), {
@@ -288,8 +294,7 @@ export function AuthProvider({ children }) {
     });
   }
 
-  async function deleteDocument(path,link) {
-
+  async function deleteDocument(path, link) {
     try {
       const storage = getStorage();
       // Create a reference to the file to delete
@@ -298,13 +303,84 @@ export function AuthProvider({ children }) {
       const docRef = await getDocs(
         query(collection(db, "documents"), where("linkDownload", "==", link))
       );
-      const ID=docRef.docs[0].id;
-      await deleteDoc(doc(db,"documents",ID));
+      const ID = docRef.docs[0].id;
+      await deleteDoc(doc(db, "documents", ID));
     } catch (error) {
       setMes(error.message);
       setShow(true);
     }
   }
+
+  async function addAssign(assignment, files) {
+    try {
+      const storage = await getStorage();
+      const assignRef = await addDoc(collection(db, "assignments"), assignment);
+      const assignID = assignRef.id;
+      const listFile = [];
+      for (const file of files) {
+        const storageRef = await ref(
+          storage,
+          `assignments/${assignID}/${file.name}`
+        );
+        const snapshot = await uploadBytes(storageRef, file);
+        const refer = snapshot.ref;
+        const link = await getDownloadURL(refer);
+        listFile.push({ linkDownload: link, name: file.name });
+      }
+      await updateDoc(assignRef, {
+        files: listFile,
+      });
+    } catch (error) {
+      setMes(error);
+      setShow(true);
+    }
+  }
+
+  async function addWork(files, assignID) {
+    try {
+      const storage = await getStorage();
+      const listFile = [];
+      for (const file of files) {
+        const storageRef = await ref(
+          storage,
+          `turnIns/${assignID}/${currentUser.uid}/${file.name}`
+        );
+        const snapshot = await uploadBytes(storageRef, file);
+        const refer = snapshot.ref;
+        const link = await getDownloadURL(refer);
+        listFile.push({ linkDownload: link, name: file.name });
+      }
+      const docRef = await getDocs(
+        query(collection(db, "users"), where("uid", "==", currentUser.uid))
+      );
+      const userDB = docRef.docs[0].data();
+
+      const newTurnIn = {
+        userID: currentUser.uid,
+        name: userDB.name,
+        time: new Date().getTime().toString(),
+        files: listFile,
+      };
+
+
+
+      const assignRef = await doc(db, "assignments", assignID);
+      const assignSnap = await getDoc(assignRef);
+      const listTurnIn = [];
+      const oldList = assignSnap.data();
+      oldList.turnIns.forEach((ele) => {
+        listTurnIn.push(ele);
+      });
+      listTurnIn.push(newTurnIn);
+      await updateDoc(assignRef, {
+        turnIns: listTurnIn,
+      });
+    } catch (error) {
+      setMes(error.message);
+      setShow(true);
+    }
+  }
+
   const value = {
     db,
     currentUser,
@@ -323,6 +399,8 @@ export function AuthProvider({ children }) {
     isInClass,
     uploadDoc,
     deleteDocument,
+    addAssign,
+    addWork,
   };
 
   useEffect(() => {

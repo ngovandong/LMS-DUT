@@ -8,6 +8,7 @@ import ForgotPassword from "./components/start/ForgotPassword";
 import UpdateProfile from "./components/start/updateProfile";
 import Classes from './components/Classes';
 import Room from './components/Room';
+import ViewAssignment from "./components/Modal/ViewAssignment";
 
 export default function Navigate() {
   return (
@@ -20,6 +21,7 @@ export default function Navigate() {
             <Route path="/forgot-password" component={ForgotPassword} />
             <PrivateRoute path="/update-profile" component={UpdateProfile} />
             <PrivateRoute exact path="/class/:id" component={Room} />
+            <PrivateRoute exact path="/assignments/:id" component={ViewAssignment} />
             <PrivateRoute path="/" component={Classes} />
           </Switch>
         </AuthProvider>

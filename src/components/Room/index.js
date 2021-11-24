@@ -5,7 +5,7 @@ import Banner from "./components/Banner";
 import Container from "./components/Container";
 import { HeaderClass } from "../Header";
 import { useAuth } from "../../contexts/AuthContext";
-import { doc, onSnapshot,getDoc } from "firebase/firestore";
+import { doc, onSnapshot, getDoc } from "firebase/firestore";
 import { useRecoilState } from "recoil";
 import { menu } from "../../utils/atoms";
 import People from "./People";
@@ -20,23 +20,20 @@ export default function Room(props) {
 
   async function fetchData() {
     const classSnap = await getDoc(doc(db, "classes", props.match.params.id));
-    const data=classSnap.data();
+    const data = classSnap.data();
     if (data.creatorUid === currentUser.uid) {
       setIs(true);
     } else {
       setIs(false);
     }
-    await onSnapshot(
-      doc(db, "classes", props.match.params.id),
-      async (doc) => {
-        const data = await doc.data();
-        setCurrentClass(data);
-      }
-    );
+    await onSnapshot(doc(db, "classes", props.match.params.id), async (doc) => {
+      const data = await doc.data();
+      setCurrentClass(data);
+    });
   }
   useEffect(() => {
     const promise = fetchData();
-    
+
     return promise;
   }, [props.match.params.id]);
   return (
@@ -60,4 +57,3 @@ function Stream(props) {
     </div>
   );
 }
-

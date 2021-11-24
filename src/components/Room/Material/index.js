@@ -9,21 +9,21 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { doc, onSnapshot, query, where, collection } from "firebase/firestore";
 
-const Containter = styled.div`
+export const Containter = styled.div`
   padding: 1.5rem;
   margin: 0 auto;
   max-width: 47.5rem;
 `;
-const Section = styled.div`
+export const Section = styled.div`
   margin-bottom: 2rem;
 `;
-const Header = styled.div`
+export const Header = styled.div` 
   border-bottom: 1px solid #129eaf;
   display: flex;
   justify-content: space-between;
   padding: 0 5px;
 `;
-const AddBT = styled.button`
+export const AddBT = styled.button`
   width: 42px;
   heigth: 42px;
   transition: all 0.1s;
@@ -32,7 +32,7 @@ const AddBT = styled.button`
     background: #0000001a;
   }
 `;
-const Row = styled.div`
+export const Row = styled.div`
   display: flex;
   padding: 8px 8px 8px 15px;
   height: 42px;
@@ -46,7 +46,7 @@ const Row = styled.div`
     background-color: transparent;
   }
 `;
-const Circle = styled.div`
+export const Circle = styled.div`
   height: 40px;
   width: 40px;
   border-radius: 100%;
@@ -98,7 +98,7 @@ function Doc(props) {
   );
 }
 
-const CreateBT = styled.button`
+export const CreateBT = styled.button`
   width: 125px;
   height: 48px;
   padding-top: 10px;

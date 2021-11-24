@@ -25,14 +25,7 @@ const errorMessage = atom({
   key: "errorMessage",
   default: "",
 });
-const changeURL = atom({
-  key: "changeURL",
-  default: true,
-});
-const showHamburguer = atom({
-  key: "showHamburguer",
-  default: true,
-});
+
 
 export {
   createDialogAtom,
@@ -40,7 +33,5 @@ export {
   menu,
   errorDialogAtom,
   errorMessage,
-  changeURL,
-  addDoc,
-  showHamburguer
+  addDoc
 };
