@@ -9,6 +9,8 @@ import UpdateProfile from "./components/start/updateProfile";
 import Classes from './components/Classes';
 import Room from './components/Room';
 import ViewAssignment from "./components/Modal/ViewAssignment";
+import UpdateAssignment from "./components/Modal/UpdateAssignment";
+import ViewWork from "./components/Modal/ViewWork";
 
 export default function Navigate() {
   return (
@@ -22,6 +24,8 @@ export default function Navigate() {
             <PrivateRoute path="/update-profile" component={UpdateProfile} />
             <PrivateRoute exact path="/class/:id" component={Room} />
             <PrivateRoute exact path="/assignments/:id" component={ViewAssignment} />
+            <PrivateRoute exact path="/updateAssigment/:id" component={UpdateAssignment} />
+            <PrivateRoute exact path="/viewWork/:id" component={ViewWork} />
             <PrivateRoute path="/" component={Classes} />
           </Switch>
         </AuthProvider>

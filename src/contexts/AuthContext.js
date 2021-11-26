@@ -28,6 +28,7 @@ import {
   uploadBytes,
   getDownloadURL,
   deleteObject,
+  listAll,
 } from "firebase/storage";
 
 import { errorDialogAtom, errorMessage } from "../utils/atoms";
@@ -356,25 +357,93 @@ export function AuthProvider({ children }) {
       const userDB = docRef.docs[0].data();
 
       const newTurnIn = {
-        userID: currentUser.uid,
         name: userDB.name,
         time: new Date().getTime().toString(),
         files: listFile,
+        note: "",
+        grade: "",
       };
-
-
 
       const assignRef = await doc(db, "assignments", assignID);
       const assignSnap = await getDoc(assignRef);
-      const listTurnIn = [];
-      const oldList = assignSnap.data();
-      oldList.turnIns.forEach((ele) => {
-        listTurnIn.push(ele);
-      });
-      listTurnIn.push(newTurnIn);
+      const data = assignSnap.data();
+      data.turnIns[currentUser.uid] = newTurnIn;
       await updateDoc(assignRef, {
-        turnIns: listTurnIn,
+        turnIns: data.turnIns,
       });
+    } catch (error) {
+      setMes(error.message);
+      setShow(true);
+    }
+  }
+
+  async function closeAssign(assignID) {
+    try {
+      const assignRef = await doc(db, "assignments", assignID);
+      await updateDoc(assignRef, {
+        isClose: true,
+      });
+    } catch (error) {
+      setMes(error.message);
+      setShow(true);
+    }
+  }
+  async function deleteAssign(assignID) {
+    try {
+      const storage = getStorage();
+      const assignRef = await doc(db, "assignments", assignID);
+      const assignSnap = await getDoc(assignRef);
+      const data = assignSnap.data();
+      if (data.files.length !== 0) {
+        const files = await ref(storage, `assignments/${assignID}`);
+        const list = await listAll(files);
+        list.items.forEach((ele) => deleteObject(ele));
+      }
+      if (data.turnIns.length !== 0) {
+        for (const key in data.turnIns) {
+          const files = await ref(storage, `turnIns/${assignID}/${key}`);
+          const list = await listAll(files);
+          list.items.forEach((ele) => deleteObject(ele));
+        }
+      }
+      await deleteDoc(await doc(db, "assignments", assignID));
+    } catch (error) {
+      setMes(error.message);
+      setShow(true);
+    }
+  }
+
+  async function updateAssign(assignment, assignID) {
+    try {
+      const ref = await doc(db, "assignments", assignID);
+      await updateDoc(ref, {
+        title: assignment.title,
+        des: assignment.des,
+        dueTime: assignment.dueTime,
+      });
+    } catch (error) {
+      setMes(error.message);
+      setShow(true);
+    }
+  }
+  async function updateClass(id, name, credits) {
+    try {
+      const docRef = doc(db, "classes", id);
+      await updateDoc(docRef, {
+        name: name,
+        credits: credits,
+      });
+    } catch (error) {
+      setMes(error.message);
+      setShow(true);
+    }
+  }
+
+  async function updateGrade(list, assignID) {
+    try {
+      console.log(list);
+      const docRef = await doc(db, "assignments", assignID);
+      await updateDoc(docRef, { turnIns: list });
     } catch (error) {
       setMes(error.message);
       setShow(true);
@@ -401,6 +470,11 @@ export function AuthProvider({ children }) {
     deleteDocument,
     addAssign,
     addWork,
+    closeAssign,
+    deleteAssign,
+    updateAssign,
+    updateClass,
+    updateGrade,
   };
 
   useEffect(() => {

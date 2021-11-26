@@ -7,7 +7,7 @@ import AddDoc from "../../Modal/AddDoc";
 import { useRecoilState } from "recoil";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useState, useEffect } from "react";
-import { doc, onSnapshot, query, where, collection } from "firebase/firestore";
+import { onSnapshot, query, where, collection } from "firebase/firestore";
 
 export const Containter = styled.div`
   padding: 1.5rem;
@@ -17,7 +17,7 @@ export const Containter = styled.div`
 export const Section = styled.div`
   margin-bottom: 2rem;
 `;
-export const Header = styled.div` 
+export const Header = styled.div`
   border-bottom: 1px solid #129eaf;
   display: flex;
   justify-content: space-between;
@@ -119,6 +119,7 @@ export default (props) => {
   const { db } = useAuth();
   const [documents, setDocuments] = useState([]);
   const [add, setAdd] = useRecoilState(addDoc);
+  const [empty, setEmpty] = useState(false);
   async function fetchData() {
     const q = query(
       collection(db, "documents"),
@@ -127,6 +128,7 @@ export default (props) => {
     onSnapshot(q, async (querySnapshot) => {
       const listDocs = querySnapshot.docs.map((ele) => ele.data());
       setDocuments(listDocs);
+      if (listDocs.length === 0) setEmpty(true);
     });
   }
 
@@ -139,7 +141,7 @@ export default (props) => {
   }
   return (
     <Containter>
-      {documents.length === 0 && <NoDoc />}
+      {empty && <NoDoc />}
       <AddDoc classID={props.classID} />
       <Section>
         {props.isAuthor && (

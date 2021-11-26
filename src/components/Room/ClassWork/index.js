@@ -7,14 +7,13 @@ import { onSnapshot, query, where, collection } from "firebase/firestore";
 import { CreateBT, Containter, Section, Header } from "../Material/index";
 import ListAssign from "./ListAssign";
 import getTime from "../../../funtions/getRelativeTime";
-import ViewAssignment from "../../Modal/ViewAssignment";
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default (props) => {
   const { db, currentUser } = useAuth();
   const [asssignments, setAsssignments] = useState([]);
   const [open, setOpen] = useState(false);
-
+  const [empty, setEmpty] = useState(false);
   async function fetchData() {
     const q = query(
       collection(db, "assignments"),
@@ -24,18 +23,18 @@ export default (props) => {
       const listDocs = querySnapshot.docs.map((ele) => {
         const data = ele.data();
         const id = ele.id;
-        const isSubmit = data.turnIns.some(
-          (ele) => ele.userID === currentUser.uid
-        );
-        const isTimeOut= data.dueTime===""?false:data.dueTime < new Date().getTime();
+        const isSubmit = data.turnIns[currentUser.uid] ? true : false;
+        const isTimeOut =
+          data.dueTime === "" ? false : data.dueTime < new Date().getTime();
         return {
-          data: ele.data(),
+          data: data,
           id: id,
           isSubmit: isSubmit,
-          isTimeOut: isTimeOut
+          isTimeOut: isTimeOut,
         };
       });
       setAsssignments(listDocs);
+      if (listDocs.length === 0) setEmpty(true);
     });
   }
 
@@ -49,7 +48,7 @@ export default (props) => {
   }
   return (
     <Containter>
-      {asssignments.length === 0 && <NoDoc />}
+      {empty && <NoDoc />}
       <CreateAssignment
         handleClick={handleAdd}
         open={open}
@@ -73,12 +72,18 @@ export default (props) => {
           <ListAssign
             isAuthor={props.isAuthor}
             dueTime={
-              ele.isSubmit?"Turned in":
-              ele.data.dueTime === "" ? "" : ele.isTimeOut?"Time out": getTime(ele.data.dueTime)}
+              ele.isSubmit
+                ? "Turned in"
+                : ele.data.dueTime === ""
+                ? ""
+                : ele.isTimeOut
+                ? "Time out"
+                : getTime(ele.data.dueTime)
+            }
             name={ele.data.title}
             assignID={ele.id}
             key={ele.id}
-            isSilver={ele.isSubmit||ele.isTimeOut||ele.isClose}
+            isSilver={ele.isSubmit || ele.isTimeOut || ele.data.isClose}
           />
         ))}
       </Section>

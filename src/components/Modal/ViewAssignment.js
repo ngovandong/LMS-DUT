@@ -15,8 +15,6 @@ import Avatar from "@mui/material/Avatar";
 import FolderIcon from "@mui/icons-material/Folder";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import { useAuth } from "../../contexts/AuthContext";
-import { errorDialogAtom, errorMessage } from "../../utils/atoms";
-import { useRecoilState } from "recoil";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useHistory } from "react-router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -37,12 +35,11 @@ const Input = styled("input")({
 export default function ViewAssignment(props) {
   const history = useHistory();
   const { db, currentUser } = useAuth();
-  const [show, setShow] = useRecoilState(errorDialogAtom);
-  const [message, setMes] = useRecoilState(errorMessage);
   const [currentAssign, setCurrentAssign] = useState({});
   const [isAuthor, setIsAuthor] = useState(false);
   const [accept, setAccept] = useState(true);
-  const [isTurnIn,setIsTurnIn]=useState(false);
+  const [isTurnIn, setIsTurnIn] = useState(false);
+  const [yourWork, setYourWork] = useState(null);
   useEffect(() => {
     const unsub = onSnapshot(
       doc(db, "assignments", props.match.params.id),
@@ -52,12 +49,18 @@ export default function ViewAssignment(props) {
         if (data.authorID === currentUser.uid) {
           setIsAuthor(true);
         }
-        const TurnIn = data.turnIns.some(
-          (ele) => ele.userID === currentUser.uid
-        );
-        setIsTurnIn(TurnIn)
+        const TurnIn = data.turnIns[currentUser.uid]?true:false;
+        if(TurnIn){
+          setYourWork(data.turnIns[currentUser.uid].files);
+        }
+          
+        setIsTurnIn(TurnIn);
         setInterval(() => {
-          if (TurnIn || (data.dueTime!==""&&data.dueTime < new Date().getTime())) {
+          if (
+            data.isClose ||
+            TurnIn ||
+            (data.dueTime !== "" && data.dueTime < new Date().getTime())
+          ) {
             setAccept(true);
           } else {
             setAccept(false);
@@ -124,34 +127,33 @@ export default function ViewAssignment(props) {
             <div
               style={{
                 borderLeft: "1px #ccc solid",
-                padding: "20px",
+                padding: "40px",
                 height: "calc(100vh - 64px)",
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  padding: "5px",
-                  justifyContent: "center",
-                  flexWrap: "wrap",
-                  alignItems: "center",
-                }}
-              >
-                {currentAssign.dueTime !== "" && (
-                  <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DateTimePicker
-                      renderInput={(params) => <TextField {...params} />}
-                      label="Due time"
-                      value={currentAssign.dueTime}
-                      readOnly
-                      onChange={() => {}}
-                      minDateTime={new Date()}
-                    />
-                  </LocalizationProvider>
-                )}
-              </div>
+              {currentAssign.dueTime !== "" && (
+                <LocalizationProvider
+                  style={{ width: "100%" }}
+                  dateAdapter={AdapterDateFns}
+                >
+                  <DateTimePicker
+                    renderInput={(params) => <TextField {...params} />}
+                    label="Due time"
+                    value={currentAssign.dueTime}
+                    readOnly
+                    onChange={() => {}}
+                    minDateTime={new Date()}
+                    style={{ width: "100%" }}
+                  />
+                </LocalizationProvider>
+              )}
               {!isAuthor && (
-                <Work assignID={props.match.params.id} accept={accept} isTurnIn={isTurnIn} />
+                <Work
+                  assignID={props.match.params.id}
+                  accept={accept}
+                  isTurnIn={isTurnIn}
+                  files={yourWork}
+                />
               )}
             </div>
           </Grid>
@@ -165,8 +167,7 @@ function Work(props) {
   const [list, setList] = useState([]);
   const { addWork } = useAuth();
   const history = useHistory();
-  const [show, setShow] = useRecoilState(errorDialogAtom);
-  const [message, setMes] = useRecoilState(errorMessage);
+  const [empty, setEmpty] = useState(true);
   function addDoc() {
     const fileIn = document.getElementById("work-files");
     fileIn.click();
@@ -200,15 +201,13 @@ function Work(props) {
     if (list.length !== 0) {
       addWork(list, props.assignID);
       history.goBack();
-    } else {
-      setMes("Your work is empty!");
-      setShow(true);
     }
   }
 
-  // useEffect(() => {
-
-  // // }, [props.accept])
+  useEffect(() => {
+    if (list.length === 0) setEmpty(true);
+    else setEmpty(false);
+  }, [props.accept, list]);
 
   return (
     <div
@@ -216,15 +215,20 @@ function Work(props) {
         boxShadow:
           "0 1px 2px 0 rgb(60 64 67 / 30%), 0 2px 6px 2px rgb(60 64 67 / 15%)",
         borderRadius: "0.5rem",
-        margin: "20px",
         padding: "20px",
+        marginTop: "20px",
       }}
     >
-      <div style={{display:"flex", justifyContent:"space-between"}}>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h4 style={{ fontSize: "1.375rem" }}>YOUR WORK</h4>
-        <span style={{color:"#129eaf"}}>{props.isTurnIn ? "Turned in" : "Assigned"}</span>
+        <span style={{ color: "#129eaf" }}>
+          {props.isTurnIn ? "Turned in" : "Assigned"}
+        </span>
       </div>
       <List dense={false}>
+        {props.files?.map((ele) => (
+          <ListDoc linkDownload={ele.linkDownload} name={ele.name} />
+        ))}
         {list.map((ele) => (
           <WorkDoc key={ele.name} name={ele.name} handleDel={handleDel} />
         ))}
@@ -239,6 +243,7 @@ function Work(props) {
         fullWidth
         startIcon={<AddIcon />}
         onClick={addDoc}
+        disabled={props.accept}
       >
         Add work
       </Button>
@@ -246,7 +251,7 @@ function Work(props) {
         fullWidth
         variant="contained"
         onClick={handleTurnIn}
-        disabled={props.accept}
+        disabled={props.accept || empty}
         color="success"
       >
         Turn in
@@ -279,7 +284,7 @@ function WorkDoc(props) {
   );
 }
 
-function ListDoc(props) {
+export function ListDoc(props) {
   return (
     <a
       style={{ textDecoration: "none", color: "#000" }}

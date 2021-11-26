@@ -25,6 +25,10 @@ const errorMessage = atom({
   key: "errorMessage",
   default: "",
 });
+const updateClassDialog = atom({
+  key: "updateClassDialog",
+  default: false,
+});
 
 
 export {
@@ -33,5 +37,6 @@ export {
   menu,
   errorDialogAtom,
   errorMessage,
-  addDoc
+  addDoc,
+  updateClassDialog
 };

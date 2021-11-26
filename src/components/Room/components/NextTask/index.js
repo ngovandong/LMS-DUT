@@ -1,6 +1,10 @@
 /* eslint-disable import/no-anonymous-default-export */
-import React from 'react';
-import styled from 'styled-components'
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { menu } from "../../../../utils/atoms";
+import { useRecoilState } from "recoil";
+import { onSnapshot, query, where, collection } from "firebase/firestore";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 // STYLES
 const Wrapper = styled.div`
@@ -14,10 +18,9 @@ const Wrapper = styled.div`
   padding: 25px;
   border-radius: 8px;
 
-  @media (max-width: 780px){
+  @media (max-width: 780px) {
     display: none;
   }
-
 `;
 
 const Title = styled.p`
@@ -42,18 +45,50 @@ const SeeAllTasks = styled.a`
   font-size: 0.9rem;
   margin-top: 20px;
 
-  :hover{
+  :hover {
     text-decoration: underline;
   }
-`
+`;
 
+export default (props) => {
+  const [nav, setNav] = useRecoilState(menu);
+  const [mes, setMes] = useState("");
+  const [num, setNum] = useState(0);
+  const { db, currentUser } = useAuth();
 
-export default () => {
+  async function fetch() {
+    const q = query(
+      collection(db, "assignments"),
+      where("classID", "==", props.classID)
+    );
+    onSnapshot(q, async (querySnapshot) => {
+      let i = 0;
+      querySnapshot.docs.forEach((ele) => {
+        const data = ele.data();
+        const isSubmit = data.turnIns[currentUser.uid] ? true : false;
+        if (!(data.isClose || isSubmit)) {
+          i++;
+        }
+      });
+      console.log(i);
+      setNum(i);
+    });
+  }
+
+  useEffect(() => {
+    const unSub = fetch();
+    return unSub;
+  }, [props.classID]);
+
   return (
-  <Wrapper>
-    <Title>Class code</Title>
-    <br/>
-    <SeeAllTasks href="">No work due soon</SeeAllTasks>
-  </Wrapper>
-  )
-}
+    <Wrapper>
+      <Title>Up coming</Title>
+      <Informations>
+        {num ? `Has ${num} work sue soon! ` : "Woohoo, no work due soon!"}
+      </Informations>
+      <SeeAllTasks onClick={() => setNav([false, true, false, false])}>
+        See all tasks
+      </SeeAllTasks>
+    </Wrapper>
+  );
+};

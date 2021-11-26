@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 import { MdAssignment } from "react-icons/md";
-
+import { useAuth } from "../../../contexts/AuthContext";
 
 export default function ListAssign(props) {
   const history = useHistory();
@@ -17,16 +17,17 @@ export default function ListAssign(props) {
   }
 
   const Circle = styled.div`
-  height: 40px;
-  width: 40px;
-  border-radius: 100%;
-  margin: auto 5px;
-  background-color: ${props.isSilver?"rgba(0,0,0,0.24)!important":"#129eaf"};
-  display: flex;
-  justify-content: center;
-  padding-top: 7px;
-`;
-
+    height: 40px;
+    width: 40px;
+    border-radius: 100%;
+    margin: auto 5px;
+    background-color: ${props.isSilver
+      ? "rgba(0,0,0,0.24)!important"
+      : "#129eaf"};
+    display: flex;
+    justify-content: center;
+    padding-top: 7px;
+  `;
 
   return (
     <Row onClick={handleClick}>
@@ -38,7 +39,7 @@ export default function ListAssign(props) {
         }}
       >
         <div style={{ display: "flex" }}>
-          <Circle >
+          <Circle>
             <MdAssignment size={25} color="#fff" />
           </Circle>
           <span
@@ -68,21 +69,45 @@ export default function ListAssign(props) {
           </span>
         </div>
       </div>
-      {props.isAuthor && <ThreeDotMenu />}
+      {props.isAuthor && <ThreeDotMenu assignID={props.assignID} />}
     </Row>
   );
 }
 
 function ThreeDotMenu(props) {
+  const { closeAssign, deleteAssign } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const history = useHistory();
   const handleClick = (event) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+  const handleClose = (e) => {
+    e.stopPropagation();
     setAnchorEl(null);
   };
 
+  function handleCloseAssign(e) {
+    e.stopPropagation();
+    setAnchorEl(null);
+    closeAssign(props.assignID);
+  }
+  function handleDeleteAssign(e) {
+    e.stopPropagation();
+    setAnchorEl(null);
+    deleteAssign(props.assignID);
+  }
+  function handleEditAssign(e) {
+    e.stopPropagation();
+    setAnchorEl(null);
+    history.push(`/updateAssigment/${props.assignID}`);
+  }
+  function handleViewWork(e) {
+    e.stopPropagation();
+    setAnchorEl(null);
+    history.push(`/viewWork/${props.assignID}`);
+  }
   return (
     <div>
       <IconButton
@@ -103,9 +128,10 @@ function ThreeDotMenu(props) {
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleClose}>Edit</MenuItem>
-        <MenuItem onClick={handleClose}>Close</MenuItem>
-        <MenuItem onClick={handleClose}>Delete</MenuItem>
+        <MenuItem onClick={handleViewWork}>Class work</MenuItem>
+        <MenuItem onClick={handleEditAssign}>Edit</MenuItem>
+        <MenuItem onClick={handleCloseAssign}>Close</MenuItem>
+        <MenuItem onClick={handleDeleteAssign}>Delete</MenuItem>
       </Menu>
     </div>
   );

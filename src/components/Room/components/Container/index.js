@@ -6,13 +6,7 @@ import CardPost from "../CardPost";
 import NextTask from "../NextTask";
 
 import { useAuth } from "../../../../contexts/AuthContext";
-import {
-  collection,
-  query,
-  where,
-  onSnapshot,
-  orderBy,
-} from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import Announcement from "../Announcement";
 
 const Wrapper = styled.div`
@@ -32,20 +26,21 @@ export default (props) => {
       where("classID", "==", props.classID)
     );
     onSnapshot(q, async (querySnapshot) => {
-      setAnnounce(querySnapshot.docs.sort((a,b)=>b.data().date-a.data().date));
-
+      setAnnounce(
+        querySnapshot.docs.sort((a, b) => b.data().date - a.data().date)
+      );
     });
   }
 
   useEffect(() => {
-    const promise=fetchData();
+    const promise = fetchData();
     return promise;
   }, [props.classID]);
 
   return (
     <>
       <Wrapper>
-        <NextTask />
+        <NextTask classID={props.classID} />
         <div style={{ width: "75%" }}>
           <Announcement classID={props.classID} />
           {announce.map((item) => (

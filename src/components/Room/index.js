@@ -11,13 +11,13 @@ import { menu } from "../../utils/atoms";
 import People from "./People";
 import Material from "./Material";
 import ClassWork from "./ClassWork";
+import UpdateClass from "../Modal/UpdateClass";
 
 export default function Room(props) {
   const [is, setIs] = useState(false);
   const [nav, setNav] = useRecoilState(menu);
   const [currentClass, setCurrentClass] = useState({});
   const { db, currentUser } = useAuth();
-
   async function fetchData() {
     const classSnap = await getDoc(doc(db, "classes", props.match.params.id));
     const data = classSnap.data();
@@ -33,12 +33,12 @@ export default function Room(props) {
   }
   useEffect(() => {
     const promise = fetchData();
-
     return promise;
   }, [props.match.params.id]);
   return (
     <>
-      <HeaderClass />
+      <HeaderClass isAuthor={is} />
+      <UpdateClass classID={props.match.params.id} credits={currentClass.credits} name={currentClass.name} />
       {nav[0] && (
         <Stream currentClass={currentClass} id={props.match.params.id} />
       )}
