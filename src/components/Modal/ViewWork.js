@@ -171,6 +171,7 @@ export default function ViewWork(props) {
                     Toolbar: CustomToolbar,
                     LoadingOverlay: CustomLoadingOverlay,
                   }}
+                  loading
                   onRowClick={handleRowClick}
                   onEditRowsModelChange={handleChangeValue}
                   isCellEditable={(params) => params.row.turned}
@@ -247,7 +248,7 @@ function CustomLoadingOverlay() {
   return (
     <GridOverlay>
       <div style={{ position: "absolute", top: 0, width: "100%" }}>
-        <LinearProgress />
+        <LinearProgress color="success" />
       </div>
     </GridOverlay>
   );

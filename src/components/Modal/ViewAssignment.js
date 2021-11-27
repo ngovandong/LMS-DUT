@@ -40,6 +40,7 @@ export default function ViewAssignment(props) {
   const [accept, setAccept] = useState(true);
   const [isTurnIn, setIsTurnIn] = useState(false);
   const [yourWork, setYourWork] = useState(null);
+  const [grade, setGrade] = useState("");
   useEffect(() => {
     const unsub = onSnapshot(
       doc(db, "assignments", props.match.params.id),
@@ -49,11 +50,11 @@ export default function ViewAssignment(props) {
         if (data.authorID === currentUser.uid) {
           setIsAuthor(true);
         }
-        const TurnIn = data.turnIns[currentUser.uid]?true:false;
-        if(TurnIn){
+        const TurnIn = data.turnIns[currentUser.uid] ? true : false;
+        if (TurnIn) {
           setYourWork(data.turnIns[currentUser.uid].files);
+          setGrade(data.turnIns[currentUser.uid].grade);
         }
-          
         setIsTurnIn(TurnIn);
         setInterval(() => {
           if (
@@ -153,6 +154,7 @@ export default function ViewAssignment(props) {
                   accept={accept}
                   isTurnIn={isTurnIn}
                   files={yourWork}
+                  grade={grade}
                 />
               )}
             </div>
@@ -224,6 +226,11 @@ function Work(props) {
         <span style={{ color: "#129eaf" }}>
           {props.isTurnIn ? "Turned in" : "Assigned"}
         </span>
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        {props.isTurnIn && props.grade && (
+          <span style={{ color: "#129eaf" }}>{`Grade: ${props.grade}`}</span>
+        )}
       </div>
       <List dense={false}>
         {props.files?.map((ele) => (

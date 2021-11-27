@@ -433,6 +433,24 @@ export function AuthProvider({ children }) {
         name: name,
         credits: credits,
       });
+      const classSnap = await getDoc(docRef);
+      const classData = classSnap.data();
+      for (const user of classData.users) {
+        const docRef = await getDocs(
+          query(collection(db, "users"), where("uid", "==", user.uid))
+        );
+        const userDB = docRef.docs[0].data();
+        const userID = docRef.docs[0].id;
+        for (const cl of userDB.enrolledClassrooms) {
+          if (cl.id === id) {
+            cl.name = name;
+            break;
+          }
+        }
+        updateDoc(doc(db, "users", userID), {
+          enrolledClassrooms: userDB.enrolledClassrooms,
+        });
+      }
     } catch (error) {
       setMes(error.message);
       setShow(true);
