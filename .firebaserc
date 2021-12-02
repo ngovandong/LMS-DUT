@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "pbl4-31c91"
+  },
+  "targets": {
+    "pbl4-31c91": {
+      "hosting": {
+        "main": [
+          "lms-bkdn"
+        ]
+      }
+    }
   }
 }

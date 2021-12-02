@@ -2,14 +2,26 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 // STYLE
 import { CardContainer } from "./styles";
-import {Link} from "react-router-dom";
-// ICONS
+import { Link } from "react-router-dom";
+import { menu } from "../../../../utils/atoms";
+import { useRecoilState } from "recoil";
 import { IoIosFolderOpen, IoMdPerson, IoMdMore } from "react-icons/io";
 
 export default function Card(item) {
   const history = useHistory();
+  const [nav, setNav] = useRecoilState(menu);
   function handleClick() {
     history.push(`/class/${item.data.id}`);
+  }
+  function handleOpenFile(e) {
+    e.stopPropagation();
+    history.push(`/class/${item.data.id}`);
+    setNav([false, false, true, false]);
+  }
+  function handleOpenPeople(e) {
+    e.stopPropagation();
+    history.push(`/class/${item.data.id}`);
+    setNav([false, false, false, true]);
   }
   return (
     <>
@@ -17,7 +29,7 @@ export default function Card(item) {
         <ul>
           <li>
             <header>
-              <Link>{item.data.name}</Link>
+              <Link to={`/class/${item.data.id}`}>{item.data.name}</Link>
 
               <button className="optionsCardBtn">
                 <IoMdMore size={25} color="white" />
@@ -32,11 +44,19 @@ export default function Card(item) {
 
             <div className="footerCard">
               <button>
-                <IoIosFolderOpen size={25} color="rgb(77, 72, 72)" />
+                <IoIosFolderOpen
+                  size={25}
+                  color="rgb(77, 72, 72)"
+                  onClick={handleOpenFile}
+                />
               </button>
 
               <button>
-                <IoMdPerson size={25} color="rgb(77, 72, 72)" />
+                <IoMdPerson
+                  size={25}
+                  color="rgb(77, 72, 72)"
+                  onClick={handleOpenPeople}
+                />
               </button>
             </div>
           </li>
