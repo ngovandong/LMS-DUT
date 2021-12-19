@@ -3,7 +3,7 @@ import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import logo from "../../img/logo1.png";
+import logo from "../../img/Logodhbk.jpg";
 
 export default function ForgotPassword() {
   const emailRef = useRef();
@@ -29,9 +29,19 @@ export default function ForgotPassword() {
     <div style={{ height: "100vh", marginTop: "-5.7rem" }}>
       <div
         className="d-flex align-items-center justify-content-center"
-        style={{ height: "20%" }}
+        style={{ height: "20%", flexDirection: "column" }}
       >
-        <img src={logo} style={{ width: "auto", height: "100%" }} alt="" />
+        <img
+          src={logo}
+          style={{
+            width: "auto",
+            height: "70%",
+            margin: "20px",
+            paddingTop: "20px",
+          }}
+          alt=""
+        />
+        <h4>LMS-DUT</h4>
       </div>
       <div
         className="d-flex align-items-center justify-content-center"
