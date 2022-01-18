@@ -1,7 +1,4 @@
 import { useRef, useState } from "react";
-import { ListGroup, Overlay, Popover } from "react-bootstrap";
-import { HeaderButton } from "./styles";
-import { IoMdAdd } from "react-icons/io";
 import "./style.css";
 import { createDialogAtom, joinDialogAtom } from "../../utils/atoms";
 import { useRecoilState } from "recoil";
