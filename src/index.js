@@ -4,7 +4,7 @@ import App from "./App";
 import { RecoilRoot } from "recoil";
 
 reactDom.render(
-  <React.StrictMode>zzz
+  <React.StrictMode>
     <RecoilRoot>
       <App />
     </RecoilRoot>
