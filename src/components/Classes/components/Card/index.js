@@ -3,8 +3,6 @@ import { useHistory } from "react-router-dom";
 // STYLE
 import { CardContainer } from "./styles";
 import { Link } from "react-router-dom";
-import { menu } from "../../../../utils/atoms";
-import { useRecoilState } from "recoil";
 import { IoIosFolderOpen, IoMdPerson, IoMdMore } from "react-icons/io";
 
 export default function Card(item) {

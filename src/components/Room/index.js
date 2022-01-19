@@ -65,9 +65,9 @@ export default function Room(props) {
       <HeaderClass isAuthor={is} updateNav={updateNav} nav={nav} />
       <UpdateClass classID={props.match.params.id} credits={currentClass.credits} name={currentClass.name} />
       {nav[0] && (
-        <Stream currentClass={currentClass} id={props.match.params.id} />
+        <Stream updateNav={updateNav} currentClass={currentClass} id={props.match.params.id} />
       )}
-      {nav[1] && <ClassWork isAuthor={is} classID={props.match.params.id} />}
+      {nav[1] && <ClassWork  isAuthor={is} classID={props.match.params.id} />}
       {nav[2] && <Material isAuthor={is} classID={props.match.params.id} />}
       {nav[3] && <People isAuthor={is} classID={props.match.params.id} />}
     </>
@@ -78,7 +78,7 @@ function Stream(props) {
   return (
     <div style={{ width: "80%", maxWidth: "1000px", margin: "auto" }}>
       <Banner data={props.currentClass} id={props.id} />
-      <Container classID={props.id} />
+      <Container updateNav={props.updateNav} classID={props.id} />
     </div>
   );
 }

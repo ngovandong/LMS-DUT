@@ -51,7 +51,6 @@ const SeeAllTasks = styled.a`
 `;
 
 export default (props) => {
-  const [nav, setNav] = useRecoilState(menu);
   const [mes, setMes] = useState("");
   const [num, setNum] = useState(0);
   const { db, currentUser } = useAuth();
@@ -86,7 +85,7 @@ export default (props) => {
       <Informations>
         {num ? `Has ${num} work sue soon! ` : "Woohoo, no work due soon!"}
       </Informations>
-      <SeeAllTasks onClick={() => setNav([false, true, false, false])}>
+      <SeeAllTasks onClick={() =>{ props.updateNav([false, true, false, false])}}>
         See all tasks
       </SeeAllTasks>
     </Wrapper>
