@@ -22,7 +22,7 @@ export default function Navigate() {
             <Route path="/signup" component={Signup} />
             <Route path="/forgot-password" component={ForgotPassword} />
             <PrivateRoute path="/update-profile" component={UpdateProfile} />
-            <PrivateRoute exact path="/class/:id" component={Room} />
+            <PrivateRoute exact path="/class/:id/:tab?" component={Room} />
             <PrivateRoute exact path="/assignments/:id" component={ViewAssignment} />
             <PrivateRoute exact path="/updateAssigment/:id" component={UpdateAssignment} />
             <PrivateRoute exact path="/viewWork/:id" component={ViewWork} />

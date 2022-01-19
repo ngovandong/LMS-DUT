@@ -1,6 +1,4 @@
 import styled from "styled-components";
-import { menu } from "../../utils/atoms";
-import { useRecoilState } from "recoil";
 
 const Tab = styled.div`
   letter-spacing: 0.01785714em;
@@ -41,7 +39,6 @@ const Container = styled.div`
 `;
 
 export default function NavBar(props) {
-  const [nav, setNav] = useRecoilState(menu);
   function handleClick(e) {
     const state = [false, false, false,false];
     if (e.target.id === "1") {
@@ -53,27 +50,27 @@ export default function NavBar(props) {
     } else {
       state[3] = true;
     }
-    setNav(state);
+    props.updateNav(state);
   }
   return (
     <Container>
       <Tab key="1" id="1" onClick={handleClick}>
         Stream
-        {nav[0] && <Under></Under>}
+        {props.nav[0] && <Under></Under>}
       </Tab>
 
       <Tab key="2" id="2" onClick={handleClick}>
         Classwork
-        {nav[1] && <Under></Under>}
+        {props.nav[1] && <Under></Under>}
       </Tab>
       <Tab key="3" id="3" onClick={handleClick}>
         Material
-        {nav[2] && <Under></Under>}
+        {props.nav[2] && <Under></Under>}
       </Tab>
 
       <Tab key="4" id="4" onClick={handleClick}>
         People
-        {nav[3] && <Under></Under>}
+        {props.nav[3] && <Under></Under>}
       </Tab>
     </Container>
   );

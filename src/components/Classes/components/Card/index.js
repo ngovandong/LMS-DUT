@@ -9,19 +9,16 @@ import { IoIosFolderOpen, IoMdPerson, IoMdMore } from "react-icons/io";
 
 export default function Card(item) {
   const history = useHistory();
-  const [nav, setNav] = useRecoilState(menu);
   function handleClick() {
     history.push(`/class/${item.data.id}`);
   }
   function handleOpenFile(e) {
     e.stopPropagation();
-    history.push(`/class/${item.data.id}`);
-    setNav([false, false, true, false]);
+    history.push(`/class/${item.data.id}/material`);
   }
   function handleOpenPeople(e) {
     e.stopPropagation();
-    history.push(`/class/${item.data.id}`);
-    setNav([false, false, false, true]);
+    history.push(`/class/${item.data.id}/people`);
   }
   return (
     <>

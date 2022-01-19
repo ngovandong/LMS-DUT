@@ -100,7 +100,7 @@ export function HeaderClass(props) {
           </Link>
         </div>
 
-        <NavBar id={props.id} />
+        <NavBar id={props.id} updateNav={props.updateNav} nav={props.nav} />
 
         <div style={{ display: "flex", height: "100%", alignItems: "center" }}>
           {props.isAuthor && (
