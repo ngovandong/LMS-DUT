@@ -101,11 +101,7 @@ export function HeaderClass(props) {
           </Link>
         </div>
 
-<<<<<<< HEAD
         <NavBar  />
-=======
-        <NavBar id={props.id} updateNav={props.updateNav} nav={props.nav} />
->>>>>>> b4eed50909e876d569a54e1e0ee862202e45d9d7
 
         <div style={{ display: "flex", height: "100%", alignItems: "center" }}>
           {props.isAuthor && (
