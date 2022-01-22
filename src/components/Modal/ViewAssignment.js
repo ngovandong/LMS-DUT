@@ -16,7 +16,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import { useAuth } from "../../contexts/AuthContext";
 import { doc, onSnapshot } from "firebase/firestore";
-import { useNavigate } from "react-router";
+import { useNavigate,useParams } from "react-router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DateTimePicker from "@mui/lab/DateTimePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
@@ -33,6 +33,7 @@ const Input = styled("input")({
 });
 
 export default function ViewAssignment(props) {
+  const {asignmentid}=useParams();
   const navigate = useNavigate();
   const { db, currentUser } = useAuth();
   const [currentAssign, setCurrentAssign] = useState({});
@@ -43,7 +44,7 @@ export default function ViewAssignment(props) {
   const [grade, setGrade] = useState("");
   useEffect(() => {
     const unsub = onSnapshot(
-      doc(db, "assignments", props.match.params.id),
+      doc(db, "assignments", asignmentid),
       (doc) => {
         const data = doc.data();
         setCurrentAssign(data);
@@ -70,7 +71,7 @@ export default function ViewAssignment(props) {
       }
     );
     return unsub;
-  }, [props.match.params.id]);
+  }, [asignmentid]);
   return (
     <div>
       <Dialog fullScreen open={true} TransitionComponent={Transition}>
@@ -150,7 +151,7 @@ export default function ViewAssignment(props) {
               )}
               {!isAuthor && (
                 <Work
-                  assignID={props.match.params.id}
+                  assignID={asignmentid}
                   accept={accept}
                   isTurnIn={isTurnIn}
                   files={yourWork}

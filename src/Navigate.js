@@ -1,6 +1,11 @@
 import React from "react";
 import { AuthProvider } from "./contexts/AuthContext";
-import { BrowserRouter, Routes, Route,Navigate as Nav } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate as Nav,
+} from "react-router-dom";
 import Signup from "./components/start/Signup";
 import Login from "./components/start/Login";
 import ForgotPassword from "./components/start/ForgotPassword";
@@ -35,19 +40,16 @@ export default function Navigate() {
               }
             >
               <Route path="update-profile" element={<UpdateProfile />} />
-              <Route path="class/:id" element={<Room />} >
-                <Route path="people" element={<People/>} />
-                <Route path="material" element={<Material/>} />
-                <Route path="classwork" element={<ClassWork/>} />
-                <Route path="stream" element={<Stream/>} />
+              <Route path=":id" element={<Room />}>
+                <Route path="people" element={<People />} />
+                <Route path="material" element={<Material />} />
+                <Route path="classwork" element={<ClassWork />} />
+                <Route path="stream" element={<Stream />} />
+                <Route path="assignments/:asignmentid" element={<ViewAssignment />} />
+                <Route path="updateAssigment/:asignmentid" element={<UpdateAssignment />} />
+                <Route path="viewWork/:asignmentid" element={<ViewWork />} />
                 <Route index element={<Nav to="stream" />} />
               </Route>
-              <Route path="assignments/:id" element={<ViewAssignment />} />
-              <Route
-                path="updateAssigment/:id"
-                element={<UpdateAssignment />}
-              />
-              <Route path="viewWork/:id" element={<ViewWork />} />
               <Route index element={<Classes />} />
             </Route>
           </Routes>

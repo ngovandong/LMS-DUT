@@ -7,11 +7,13 @@ import { doc, onSnapshot, getDoc } from "firebase/firestore";
 import {Outlet,useParams} from 'react-router-dom';
 import UpdateClass from "../Modal/UpdateClass";
 
-export default function Room(props) {
+export default function Room() {
   const {id}=useParams();
   const [is, setIs] = useState(false);
   const [currentClass, setCurrentClass] = useState({});
   const { db, currentUser } = useAuth();
+  
+
   async function fetchData() {
     const classSnap = await getDoc(doc(db, "classes", id));
     const data = classSnap.data();

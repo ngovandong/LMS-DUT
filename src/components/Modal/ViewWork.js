@@ -9,7 +9,7 @@ import Slide from "@mui/material/Slide";
 import Grid from "@mui/material/Grid";
 import { useAuth } from "../../contexts/AuthContext";
 import { getDoc, doc, onSnapshot } from "firebase/firestore";
-import { useNavigate } from "react-router";
+import { useNavigate,useParams } from "react-router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LinearProgress from "@mui/material/LinearProgress";
 
@@ -42,9 +42,10 @@ export default function ViewWork(props) {
   const [listFile, setListFile] = useState([]);
   const [listTurned, setListTurned] = useState({});
   const [title, setTitle] = useState("");
+  const {asignmentid}=useParams();
   async function fetchData() {
     onSnapshot(
-      doc(db, "assignments", props.match.params.id),
+      doc(db, "assignments", asignmentid),
       async (result) => {
         const data = result.data();
         setListTurned(data.turnIns);
@@ -85,7 +86,7 @@ export default function ViewWork(props) {
   useEffect(() => {
     const unsub = fetchData();
     return unsub;
-  }, [props.match.params.id]);
+  }, [asignmentid]);
 
   function handleRowClick(object) {
     const row = object.row;
@@ -97,7 +98,7 @@ export default function ViewWork(props) {
   }
 
   function handleSave() {
-      updateGrade(listTurned,props.match.params.id);
+      updateGrade(listTurned,asignmentid);
   }
 
   function handleChangeValue(model) {

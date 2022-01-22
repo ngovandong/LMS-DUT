@@ -17,7 +17,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { useAuth } from "../../contexts/AuthContext";
 import { doc, onSnapshot } from "firebase/firestore";
-import { useNavigate } from "react-router";
+import { useNavigate,useParams } from "react-router";
 import { ListDoc } from "./ViewAssignment";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -33,6 +33,7 @@ export default function UpdateAssignment(props) {
   const [des, setDes] = useState("");
   const { db, updateAssign } = useAuth();
   const navigate = useNavigate();
+  const {asignmentid}= useParams();
   
   function checkAccept() {
     if (title === "" || (checked && time <= new Date().getTime())) {
@@ -47,12 +48,17 @@ export default function UpdateAssignment(props) {
         des: des,
         dueTime: checked ? time.getTime() : "",
       };
-      updateAssign(assignment,props.match.params.id);
+      updateAssign(assignment,asignmentid);
       navigate(-1);
   }
+
+  useEffect(() => {
+    checkAccept();
+  });
+
   useEffect(() => {
     const unsub = onSnapshot(
-      doc(db, "assignments", props.match.params.id),
+      doc(db, "assignments", asignmentid),
       (doc) => {
         const data = doc.data();
         setTitle(doc.data().title);
@@ -66,9 +72,8 @@ export default function UpdateAssignment(props) {
         }
       }
     );
-    checkAccept();
     return unsub;
-  }, [props.match.params.id]);
+  }, [asignmentid]);
   return (
     <div>
       <Dialog fullScreen open={true} TransitionComponent={Transition}>

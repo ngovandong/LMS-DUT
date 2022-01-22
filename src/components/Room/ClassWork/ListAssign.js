@@ -13,7 +13,7 @@ export default function ListAssign(props) {
   const navigate = useNavigate();
 
   function handleClick() {
-    navigate(`/assignments/${props.assignID}`);
+    navigate(`../assignments/${props.assignID}`);
   }
 
   const Circle = styled.div`
@@ -101,12 +101,12 @@ function ThreeDotMenu(props) {
   function handleEditAssign(e) {
     e.stopPropagation();
     setAnchorEl(null);
-    navigate(`/updateAssigment/${props.assignID}`);
+    navigate(`../updateAssigment/${props.assignID}`);
   }
   function handleViewWork(e) {
     e.stopPropagation();
     setAnchorEl(null);
-    navigate(`/viewWork/${props.assignID}`);
+    navigate(`../viewWork/${props.assignID}`);
   }
   return (
     <div>

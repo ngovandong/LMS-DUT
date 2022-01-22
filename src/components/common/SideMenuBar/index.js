@@ -41,7 +41,7 @@ export default ({ hide,handleClick }) => {
         </Link>
         {classes.map((menuLine) => (
           <Link
-            to={`/class/${menuLine.id}`}
+            to={`/${menuLine.id}`}
             key={menuLine.id}
             onClick={handle}
           >

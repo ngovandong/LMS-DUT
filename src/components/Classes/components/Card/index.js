@@ -8,15 +8,15 @@ import { IoIosFolderOpen, IoMdPerson, IoMdMore } from "react-icons/io";
 export default function Card(item) {
   const navigate = useNavigate();
   function handleClick() {
-    navigate(`/class/${item.data.id}`);
+    navigate(`${item.data.id}`);
   }
   function handleOpenFile(e) {
     e.stopPropagation();
-    navigate(`/class/${item.data.id}/material`);
+    navigate(`${item.data.id}/material`);
   }
   function handleOpenPeople(e) {
     e.stopPropagation();
-    navigate(`/class/${item.data.id}/people`);
+    navigate(`${item.data.id}/people`);
   }
   return (
     <>
@@ -24,7 +24,7 @@ export default function Card(item) {
         <ul>
           <li>
             <header>
-              <Link to={`/class/${item.data.id}`}>{item.data.name}</Link>
+              <Link to={`${item.data.id}`}>{item.data.name}</Link>
 
               <button className="optionsCardBtn">
                 <IoMdMore size={25} color="white" />

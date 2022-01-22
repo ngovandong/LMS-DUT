@@ -47,7 +47,7 @@ export default function NavBar(props) {
       {menu.map((ele) => (
         <NavLink
           style={{display:"block",textDecoration:"none",height:"100%"}}
-          to={`/class/${id}/${ele.path}`}
+          to={`/${id}/${ele.path}`}
           children={({ isActive }) => {
             return isActive ? <TabUnder name={ele.name} /> : <Tab>{ele.name}</Tab>;
           }}
