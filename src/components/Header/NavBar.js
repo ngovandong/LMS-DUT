@@ -1,5 +1,9 @@
 import styled from "styled-components";
+<<<<<<< HEAD
 import { useParams, NavLink } from "react-router-dom";
+=======
+
+>>>>>>> b4eed50909e876d569a54e1e0ee862202e45d9d7
 const Tab = styled.div`
   letter-spacing: 0.01785714em;
   font-family: "Google Sans", Roboto, Arial, sans-serif;
@@ -41,6 +45,7 @@ const Container = styled.div`
 
 const menu = [{path:"stream",name:"Stream"}, {path:"classwork",name:"Classwork"}, {path:"material",name:"Material"}, {path:"people",name:"People"}];
 export default function NavBar(props) {
+<<<<<<< HEAD
   const { id } = useParams();
   return (
     <Container>
@@ -55,6 +60,41 @@ export default function NavBar(props) {
         ></NavLink>
       ))}
       
+=======
+  function handleClick(e) {
+    const state = [false, false, false,false];
+    if (e.target.id === "1") {
+      state[0] = true;
+    } else if (e.target.id === "2") {
+      state[1] = true;
+    } else if (e.target.id === "3") {
+      state[2] = true;
+    } else {
+      state[3] = true;
+    }
+    props.updateNav(state);
+  }
+  return (
+    <Container>
+      <Tab key="1" id="1" onClick={handleClick}>
+        Stream
+        {props.nav[0] && <Under></Under>}
+      </Tab>
+
+      <Tab key="2" id="2" onClick={handleClick}>
+        Classwork
+        {props.nav[1] && <Under></Under>}
+      </Tab>
+      <Tab key="3" id="3" onClick={handleClick}>
+        Material
+        {props.nav[2] && <Under></Under>}
+      </Tab>
+
+      <Tab key="4" id="4" onClick={handleClick}>
+        People
+        {props.nav[3] && <Under></Under>}
+      </Tab>
+>>>>>>> b4eed50909e876d569a54e1e0ee862202e45d9d7
     </Container>
   );
 }

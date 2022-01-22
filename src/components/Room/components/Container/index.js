@@ -62,7 +62,7 @@ export default (props) => {
   return (
     <>
       <Wrapper>
-        <NextTask classID={props.classID} />
+        <NextTask updateNav={props.updateNav} classID={props.classID} />
         <div style={{ width: "75%" }}>
           <Announcement classID={props.classID} />
           {listDisplay.map((item) => (
