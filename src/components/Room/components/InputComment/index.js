@@ -56,8 +56,8 @@ export default (props) => {
   const { getPhoto, createComment } = useAuth();
   const messageRef = useRef("");
   const [send, setSend] = useState(false);
-  const [show, setShow] = useRecoilState(errorDialogAtom);
-  const [error, setError] = useRecoilState(errorMessage);
+  const [, setShow] = useRecoilState(errorDialogAtom);
+  const [, setError] = useRecoilState(errorMessage);
   function handleSend() {
     if (send) {
       try {
@@ -72,14 +72,14 @@ export default (props) => {
   }
 
   function hanldeChange() {
-    if (messageRef.current.value != "") {
+    if (messageRef.current.value !== "") {
       setSend(true);
     } else {
       setSend(false);
     }
   }
   function enter(e) {
-    if (e.keyCode == 13) {
+    if (e.keyCode === 13) {
       handleSend();
     }
   }

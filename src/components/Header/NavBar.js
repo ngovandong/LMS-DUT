@@ -1,16 +1,15 @@
 import styled from "styled-components";
-import { menu } from "../../utils/atoms";
-import { useRecoilState } from "recoil";
-
+import { useParams, NavLink } from "react-router-dom";
 const Tab = styled.div`
   letter-spacing: 0.01785714em;
   font-family: "Google Sans", Roboto, Arial, sans-serif;
   font-size: 0.875rem !important;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.25rem;
   color: #3c4043;
   text-transform: none;
   box-sizing: border-box;
+  height: 100%;
   padding: 0.125rem 1.5rem 0 1.5rem;
   position: relative !important;
   text-decoration: none !important;
@@ -40,41 +39,31 @@ const Container = styled.div`
   height: 100%;
 `;
 
+const menu = [{path:"stream",name:"Stream"}, {path:"classwork",name:"Classwork"}, {path:"material",name:"Material"}, {path:"people",name:"People"}];
 export default function NavBar(props) {
-  const [nav, setNav] = useRecoilState(menu);
-  function handleClick(e) {
-    const state = [false, false, false,false];
-    if (e.target.id === "1") {
-      state[0] = true;
-    } else if (e.target.id === "2") {
-      state[1] = true;
-    } else if (e.target.id === "3") {
-      state[2] = true;
-    } else {
-      state[3] = true;
-    }
-    setNav(state);
-  }
+  const { id } = useParams();
   return (
     <Container>
-      <Tab key="1" id="1" onClick={handleClick}>
-        Stream
-        {nav[0] && <Under></Under>}
-      </Tab>
-
-      <Tab key="2" id="2" onClick={handleClick}>
-        Classwork
-        {nav[1] && <Under></Under>}
-      </Tab>
-      <Tab key="3" id="3" onClick={handleClick}>
-        Material
-        {nav[2] && <Under></Under>}
-      </Tab>
-
-      <Tab key="4" id="4" onClick={handleClick}>
-        People
-        {nav[3] && <Under></Under>}
-      </Tab>
+      {menu.map((ele) => (
+        <NavLink
+          style={{display:"block",textDecoration:"none",height:"100%"}}
+          to={`/class/${id}/${ele.path}`}
+          children={({ isActive }) => {
+            return isActive ? <TabUnder name={ele.name} /> : <Tab>{ele.name}</Tab>;
+          }}
+          key={ele.path}
+        ></NavLink>
+      ))}
+      
     </Container>
+  );
+}
+
+function TabUnder(props) {
+  return (
+    <Tab>
+      {props.name}
+      <Under />
+    </Tab>
   );
 }

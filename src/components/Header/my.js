@@ -1,6 +1,6 @@
 import { HeaderAvatar } from "./styles";
 import { useAuth } from "../../contexts/AuthContext";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./style.css";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -9,19 +9,19 @@ import React, { useState } from 'react'
 
 export default function My() {
   const { logout, getPhoto } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   async function handleLogout() {
     try {
       await logout();
-      history.push("/login");
+      navigate("/login");
     } catch (error) {
       console.log(error);
     }
   }
   async function handleUpdate() {
     try {
-      history.push("/update-profile");
+      navigate("/update-profile");
     } catch (error) {
       console.log(error);
     }

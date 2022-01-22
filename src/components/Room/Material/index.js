@@ -8,6 +8,7 @@ import { useRecoilState } from "recoil";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { onSnapshot, query, where, collection } from "firebase/firestore";
+import {useParams} from 'react-router-dom';
 
 export const Containter = styled.div`
   padding: 1.5rem;
@@ -88,7 +89,9 @@ function Doc(props) {
             {props.name}
           </span>
         </div>
-        {props.isAuthor && (
+        {
+        props.isAuthor && 
+        (
           <AddBT onClick={handleClick}>
             <AiFillDelete size={20} color="#007b83" />
           </AddBT>
@@ -116,14 +119,18 @@ export const CreateBT = styled.button`
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default (props) => {
-  const { db } = useAuth();
+  const { db,isAuthor } = useAuth();
   const [documents, setDocuments] = useState([]);
-  const [add, setAdd] = useRecoilState(addDoc);
+  const [, setAdd] = useRecoilState(addDoc);
   const [empty, setEmpty] = useState(false);
+  const {id}=useParams();
+  const [is, setIs] = useState(false);
   async function fetchData() {
+    const result=await isAuthor(id);
+    setIs(result);
     const q = query(
       collection(db, "documents"),
-      where("classID", "==", props.classID)
+      where("classID", "==", id)
     );
     onSnapshot(q, async (querySnapshot) => {
       const listDocs = querySnapshot.docs.map((ele) => ele.data());
@@ -135,16 +142,18 @@ export default (props) => {
   useEffect(() => {
     const promise = fetchData();
     return promise;
-  }, [props.classID]);
+  }, [id]);
   function handleAdd() {
     setAdd(true);
   }
   return (
     <Containter>
       {empty && <NoDoc />}
-      <AddDoc classID={props.classID} />
+      <AddDoc classID={id} />
       <Section>
-        {props.isAuthor && (
+        {
+        is && 
+        (
           <Header>
             <CreateBT onClick={handleAdd}>
               <IoIosAdd color="#fff" size={30} />
@@ -158,9 +167,9 @@ export default (props) => {
         )}
         {documents.map((ele) => (
           <Doc
-            isAuthor={props.isAuthor}
+            isAuthor={is}
             name={ele.name}
-            classID={props.classID}
+            classID={id}
             key={ele.linkDownload}
             link={ele.linkDownload}
           />

@@ -17,7 +17,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { useAuth } from "../../contexts/AuthContext";
 import { doc, onSnapshot } from "firebase/firestore";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 import { ListDoc } from "./ViewAssignment";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -32,8 +32,8 @@ export default function UpdateAssignment(props) {
   const [title, setTitle] = useState("");
   const [des, setDes] = useState("");
   const { db, updateAssign } = useAuth();
-  const history = useHistory();
-
+  const navigate = useNavigate();
+  
   function checkAccept() {
     if (title === "" || (checked && time <= new Date().getTime())) {
       setAccept(true);
@@ -48,11 +48,8 @@ export default function UpdateAssignment(props) {
         dueTime: checked ? time.getTime() : "",
       };
       updateAssign(assignment,props.match.params.id);
-      history.goBack();
+      navigate(-1);
   }
-  useEffect(() => {
-    checkAccept();
-  });
   useEffect(() => {
     const unsub = onSnapshot(
       doc(db, "assignments", props.match.params.id),
@@ -80,7 +77,7 @@ export default function UpdateAssignment(props) {
             <IconButton
               edge="start"
               color="inherit"
-              onClick={() => history.goBack()}
+              onClick={() => navigate(-1)}
               aria-label="close"
             >
               <ArrowBackIcon />

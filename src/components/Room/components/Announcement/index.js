@@ -37,8 +37,8 @@ const InputAnnounce = styled.input`
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default (props) => {
-  const [show, setShow] = useRecoilState(errorDialogAtom);
-  const [error, setError] = useRecoilState(errorMessage);
+  const [, setShow] = useRecoilState(errorDialogAtom);
+  const [, setError] = useRecoilState(errorMessage);
   const { getPhoto, createAnnounce } = useAuth();
   const [send, setSend] = useState(false);
   const messageRef = useRef("");
@@ -55,14 +55,14 @@ export default (props) => {
     }
   }
   function hanldeChange(){
-    if(messageRef.current.value!=""){
+    if(messageRef.current.value!==""){
       setSend(true);
     }else{
       setSend(false);
     }
   }
   function enter(e){
-    if(e.keyCode==13){
+    if(e.keyCode===13){
       handleSend();
     }
     

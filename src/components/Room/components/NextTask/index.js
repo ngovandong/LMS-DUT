@@ -1,11 +1,9 @@
 /* eslint-disable import/no-anonymous-default-export */
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { menu } from "../../../../utils/atoms";
-import { useRecoilState } from "recoil";
 import { onSnapshot, query, where, collection } from "firebase/firestore";
 import { useAuth } from "../../../../contexts/AuthContext";
-
+import {useNavigate} from 'react-router-dom';
 // STYLES
 const Wrapper = styled.div`
   display: flex;
@@ -51,8 +49,7 @@ const SeeAllTasks = styled.a`
 `;
 
 export default (props) => {
-  const [nav, setNav] = useRecoilState(menu);
-  const [mes, setMes] = useState("");
+  const navigate=useNavigate();
   const [num, setNum] = useState(0);
   const { db, currentUser } = useAuth();
 
@@ -70,7 +67,6 @@ export default (props) => {
           i++;
         }
       });
-      console.log(i);
       setNum(i);
     });
   }
@@ -86,7 +82,7 @@ export default (props) => {
       <Informations>
         {num ? `Has ${num} work sue soon! ` : "Woohoo, no work due soon!"}
       </Informations>
-      <SeeAllTasks onClick={() => setNav([false, true, false, false])}>
+      <SeeAllTasks onClick={() => navigate("../classwork")}>
         See all tasks
       </SeeAllTasks>
     </Wrapper>

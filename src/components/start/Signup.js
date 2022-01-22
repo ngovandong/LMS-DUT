@@ -2,19 +2,19 @@ import React, { useRef, useState } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { BsGoogle } from "react-icons/bs";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "../../img/Logodhbk.jpg";
 
 export default function Signup() {
   const emailRef = useRef();
   const passwordRef = useRef();
-  const usernameRef = useRef();
+  const usernameRef = useRef(); 
   const passwordConfirmRef = useRef();
   const { signup, signInWithGoogle } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -29,7 +29,7 @@ export default function Signup() {
         passwordRef.current.value,
         usernameRef.current.value
       );
-      history.push("/login");
+      navigate("/login");
     } catch (error) {
       setError(error.message);
     }
@@ -39,7 +39,7 @@ export default function Signup() {
     e.preventDefault();
     try {
       await signInWithGoogle();
-      history.push("/");
+      navigate("/");
     } catch (error) {
       window.alert("Fail to log in!");
     }

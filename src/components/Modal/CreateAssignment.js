@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState,useEffect } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -158,7 +159,6 @@ export default function CreateAssignment(props) {
                   label="Description"
                   multiline
                   fullWidth
-                  rows={4}
                   variant="filled"
                   rows="6"
                   onChange={(e) => setDes(e.target.value)}

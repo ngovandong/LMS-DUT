@@ -1,33 +1,56 @@
 import React from "react";
 import { AuthProvider } from "./contexts/AuthContext";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route,Navigate as Nav } from "react-router-dom";
 import Signup from "./components/start/Signup";
 import Login from "./components/start/Login";
-import PrivateRoute from "./components/start/PrivateRoute";
 import ForgotPassword from "./components/start/ForgotPassword";
 import UpdateProfile from "./components/start/updateProfile";
-import Classes from './components/Classes';
-import Room from './components/Room';
+import Classes from "./components/Classes";
+import Room from "./components/Room";
 import ViewAssignment from "./components/Modal/ViewAssignment";
 import UpdateAssignment from "./components/Modal/UpdateAssignment";
 import ViewWork from "./components/Modal/ViewWork";
+import RequireAuth from "./RequireAuth";
+import PrivatePage from "./PrivatePage";
+import People from "./components/Room/People";
+import Material from "./components/Room/Material";
+import ClassWork from "./components/Room/ClassWork";
+import Stream from "./components/Room/Steam";
 
 export default function Navigate() {
   return (
     <div>
       <BrowserRouter>
         <AuthProvider>
-          <Switch>
-            <Route path="/login" component={Login} />
-            <Route path="/signup" component={Signup} />
-            <Route path="/forgot-password" component={ForgotPassword} />
-            <PrivateRoute path="/update-profile" component={UpdateProfile} />
-            <PrivateRoute exact path="/class/:id" component={Room} />
-            <PrivateRoute exact path="/assignments/:id" component={ViewAssignment} />
-            <PrivateRoute exact path="/updateAssigment/:id" component={UpdateAssignment} />
-            <PrivateRoute exact path="/viewWork/:id" component={ViewWork} />
-            <PrivateRoute path="/" component={Classes} />
-          </Switch>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route
+              path="/"
+              element={
+                <RequireAuth>
+                  <PrivatePage />
+                </RequireAuth>
+              }
+            >
+              <Route path="update-profile" element={<UpdateProfile />} />
+              <Route path="class/:id" element={<Room />} >
+                <Route path="people" element={<People/>} />
+                <Route path="material" element={<Material/>} />
+                <Route path="classwork" element={<ClassWork/>} />
+                <Route path="stream" element={<Stream/>} />
+                <Route index element={<Nav to="stream" />} />
+              </Route>
+              <Route path="assignments/:id" element={<ViewAssignment />} />
+              <Route
+                path="updateAssigment/:id"
+                element={<UpdateAssignment />}
+              />
+              <Route path="viewWork/:id" element={<ViewWork />} />
+              <Route index element={<Classes />} />
+            </Route>
+          </Routes>
         </AuthProvider>
       </BrowserRouter>
     </div>

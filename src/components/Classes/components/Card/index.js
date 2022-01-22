@@ -1,27 +1,22 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // STYLE
 import { CardContainer } from "./styles";
 import { Link } from "react-router-dom";
-import { menu } from "../../../../utils/atoms";
-import { useRecoilState } from "recoil";
 import { IoIosFolderOpen, IoMdPerson, IoMdMore } from "react-icons/io";
 
 export default function Card(item) {
-  const history = useHistory();
-  const [nav, setNav] = useRecoilState(menu);
+  const navigate = useNavigate();
   function handleClick() {
-    history.push(`/class/${item.data.id}`);
+    navigate(`/class/${item.data.id}`);
   }
   function handleOpenFile(e) {
     e.stopPropagation();
-    history.push(`/class/${item.data.id}`);
-    setNav([false, false, true, false]);
+    navigate(`/class/${item.data.id}/material`);
   }
   function handleOpenPeople(e) {
     e.stopPropagation();
-    history.push(`/class/${item.data.id}`);
-    setNav([false, false, false, true]);
+    navigate(`/class/${item.data.id}/people`);
   }
   return (
     <>

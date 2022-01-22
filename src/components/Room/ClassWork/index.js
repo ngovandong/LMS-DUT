@@ -7,18 +7,20 @@ import { onSnapshot, query, where, collection } from "firebase/firestore";
 import { CreateBT, Containter, Section, Header } from "../Material/index";
 import ListAssign from "./ListAssign";
 import getTime from "../../../funtions/getRelativeTime";
+import { useParams } from "react-router-dom";
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default (props) => {
-  const { db, currentUser } = useAuth();
+  const { id } = useParams();
+  const { db, currentUser, isAuthor } = useAuth();
   const [asssignments, setAsssignments] = useState([]);
   const [open, setOpen] = useState(false);
   const [empty, setEmpty] = useState(false);
+  const [is, setIs] = useState(false);
   async function fetchData() {
-    const q = query(
-      collection(db, "assignments"),
-      where("classID", "==", props.classID)
-    );
+    const result=await isAuthor(id);
+    setIs(result);
+    const q = query(collection(db, "assignments"), where("classID", "==", id));
     onSnapshot(q, async (querySnapshot) => {
       const listDocs = querySnapshot.docs.map((ele) => {
         const data = ele.data();
@@ -41,7 +43,7 @@ export default (props) => {
   useEffect(() => {
     const promise = fetchData();
     return promise;
-  }, [props.classID]);
+  }, [id]);
 
   function handleAdd() {
     setOpen(!open);
@@ -49,14 +51,10 @@ export default (props) => {
   return (
     <Containter>
       {empty && <NoDoc />}
-      <CreateAssignment
-        handleClick={handleAdd}
-        open={open}
-        classID={props.classID}
-      />
-      <AddDoc classID={props.classID} />
+      <CreateAssignment handleClick={handleAdd} open={open} classID={id} />
+      <AddDoc classID={id} />
       <Section>
-        {props.isAuthor && (
+        {is && (
           <Header>
             <CreateBT onClick={handleAdd}>
               <IoIosAdd color="#fff" size={30} />
@@ -70,7 +68,7 @@ export default (props) => {
         )}
         {asssignments.map((ele) => (
           <ListAssign
-            isAuthor={props.isAuthor}
+            isAuthor={is}
             dueTime={
               ele.isSubmit
                 ? "Turned in"

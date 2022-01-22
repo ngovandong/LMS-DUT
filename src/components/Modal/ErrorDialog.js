@@ -5,10 +5,9 @@ import { errorDialogAtom, errorMessage } from "../../utils/atoms";
 // eslint-disable-next-line import/no-anonymous-default-export
 export default function ErrorDialog() {
   const [show, setShow] = useRecoilState(errorDialogAtom);
-  const [message, setMessage] = useRecoilState(errorMessage);
+  const [message, ] = useRecoilState(errorMessage);
 
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
 
   return (
     <>

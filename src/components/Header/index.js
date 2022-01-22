@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoMdSettings } from "react-icons/io";
@@ -100,7 +101,7 @@ export function HeaderClass(props) {
           </Link>
         </div>
 
-        <NavBar id={props.id} />
+        <NavBar  />
 
         <div style={{ display: "flex", height: "100%", alignItems: "center" }}>
           {props.isAuthor && (

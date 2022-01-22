@@ -4,16 +4,16 @@ import React, { useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { MdAssignment } from "react-icons/md";
 import { useAuth } from "../../../contexts/AuthContext";
 
 export default function ListAssign(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   function handleClick() {
-    history.push(`/assignments/${props.assignID}`);
+    navigate(`/assignments/${props.assignID}`);
   }
 
   const Circle = styled.div`
@@ -78,7 +78,7 @@ function ThreeDotMenu(props) {
   const { closeAssign, deleteAssign } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const history = useHistory();
+  const navigate = useNavigate();
   const handleClick = (event) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
@@ -101,12 +101,12 @@ function ThreeDotMenu(props) {
   function handleEditAssign(e) {
     e.stopPropagation();
     setAnchorEl(null);
-    history.push(`/updateAssigment/${props.assignID}`);
+    navigate(`/updateAssigment/${props.assignID}`);
   }
   function handleViewWork(e) {
     e.stopPropagation();
     setAnchorEl(null);
-    history.push(`/viewWork/${props.assignID}`);
+    navigate(`/viewWork/${props.assignID}`);
   }
   return (
     <div>

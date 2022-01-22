@@ -9,7 +9,7 @@ import Slide from "@mui/material/Slide";
 import Grid from "@mui/material/Grid";
 import { useAuth } from "../../contexts/AuthContext";
 import { getDoc, doc, onSnapshot } from "firebase/firestore";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LinearProgress from "@mui/material/LinearProgress";
 
@@ -36,7 +36,7 @@ function CustomToolbar() {
 }
 
 export default function ViewWork(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { db,updateGrade } = useAuth();
   const [rows, setRows] = useState([]);
   const [listFile, setListFile] = useState([]);
@@ -113,7 +113,6 @@ export default function ViewWork(props) {
         listTurned[key].note = model[key].note.value;
       }
     }
-    console.log(listTurned);
     setListTurned(listTurned);
   }
 
@@ -125,7 +124,7 @@ export default function ViewWork(props) {
             <IconButton
               edge="start"
               color="inherit"
-              onClick={() => history.goBack()}
+              onClick={() => navigate(-1)}
               aria-label="close"
             >
               <ArrowBackIcon />

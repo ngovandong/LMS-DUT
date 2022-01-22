@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 
 // COMPONENTS
@@ -23,7 +25,8 @@ export default function Container() {
   }
 
   useEffect(() => {
-    fetchData();
+    const pro=fetchData();
+    return pro;
   }, []);
 
   return (

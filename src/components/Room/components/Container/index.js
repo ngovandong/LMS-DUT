@@ -23,7 +23,7 @@ export default (props) => {
   const { db } = useAuth();
   const [hasMore, setHasmore] = useState(false);
   const [listDisplay, setListDisplay] = useState([]);
-  const [announce, setAnnounce] = useState([]);
+  const [, setAnnounce] = useState([]);
   const [numPage, setNumPage] = useState(5);
 
   function handleClick() {
@@ -50,7 +50,6 @@ export default (props) => {
         setHasmore(false);
         setListDisplay(listdata);
       }
-      console.log(1);
     });
   }
 

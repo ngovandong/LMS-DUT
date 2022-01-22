@@ -16,7 +16,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import { useAuth } from "../../contexts/AuthContext";
 import { doc, onSnapshot } from "firebase/firestore";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DateTimePicker from "@mui/lab/DateTimePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
@@ -33,7 +33,7 @@ const Input = styled("input")({
 });
 
 export default function ViewAssignment(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { db, currentUser } = useAuth();
   const [currentAssign, setCurrentAssign] = useState({});
   const [isAuthor, setIsAuthor] = useState(false);
@@ -79,7 +79,7 @@ export default function ViewAssignment(props) {
             <IconButton
               edge="start"
               color="inherit"
-              onClick={() => history.goBack()}
+              onClick={() => navigate(-1)}
               aria-label="close"
             >
               <ArrowBackIcon />
@@ -168,7 +168,7 @@ export default function ViewAssignment(props) {
 function Work(props) {
   const [list, setList] = useState([]);
   const { addWork } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [empty, setEmpty] = useState(true);
   function addDoc() {
     const fileIn = document.getElementById("work-files");
@@ -202,7 +202,7 @@ function Work(props) {
   function handleTurnIn() {
     if (list.length !== 0) {
       addWork(list, props.assignID);
-      history.goBack();
+      navigate(-1);
     }
   }
 
@@ -297,7 +297,7 @@ export function ListDoc(props) {
       style={{ textDecoration: "none", color: "#000" }}
       href={props.linkDownload}
       target="_blank"
-      rel="noopener"
+      rel="noopener noreferrer"
     >
       <ListItem sx={{ borderBottom: "1px #ccc solid" }}>
         <ListItemAvatar>

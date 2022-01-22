@@ -1,10 +1,11 @@
 import styled from "styled-components";
 import { IoMdPersonAdd } from "react-icons/io";
-import {AiFillDelete} from 'react-icons/ai'
+import { AiFillDelete } from "react-icons/ai";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
-import ShowCode  from '../../Modal/showCode'
+import { useParams } from "react-router-dom";
+import ShowCode from "../../Modal/showCode";
 const Containter = styled.div`
   padding: 1.5rem;
   margin: 0 auto;
@@ -29,7 +30,6 @@ const AddBT = styled.button`
   }
 `;
 const Row = styled.div`
-
   display: flex;
   padding: 8px 8px 8px 15px;
   height: 42px;
@@ -37,7 +37,7 @@ const Row = styled.div`
   justify-content: space-between;
   border-bottom: 0.0625rem solid #e0e0e0;
   border-radius: 5px;
-  :hover{
+  :hover {
     border-color: transparent;
     background-color: #e4f7fb;
   }
@@ -50,9 +50,9 @@ const Avatar = styled.img`
 `;
 
 function Member(props) {
-  const {deleteMember}= useAuth();
-  async function handleDelete(){
-    deleteMember(props.Uid,props.classID);
+  const { deleteMember } = useAuth();
+  async function handleDelete() {
+    deleteMember(props.Uid, props.classID);
   }
   return (
     <Row>
@@ -69,9 +69,11 @@ function Member(props) {
           {props.name}
         </span>
       </div>
-      {props.isAuthor&&<AddBT onClick={handleDelete} >
-        <AiFillDelete size={20} color="#8B0000"  />
-      </AddBT>}
+      {props.isAuthor && (
+        <AddBT onClick={handleDelete}>
+          <AiFillDelete size={20} color="#8B0000" />
+        </AddBT>
+      )}
     </Row>
   );
 }
@@ -99,12 +101,16 @@ function Teacher(props) {
 }
 // eslint-disable-next-line import/no-anonymous-default-export
 export default (props) => {
-  const { getPhoto, db } = useAuth();
   const [peoples, setPeoples] = useState([]);
   const [teacher, setTeacher] = useState({});
   const [show, setShow] = useState(false);
+  const { id } = useParams();
+  const { db, isAuthor } = useAuth();
+  const [is, setIs] = useState(false);
   async function fetchData() {
-    const docRef = doc(db, "classes", props.classID);
+    const result=await isAuthor(id);
+    setIs(result);
+    const docRef = doc(db, "classes", id);
     onSnapshot(docRef, async (result) => {
       const classData = result.data();
       setPeoples(classData.users);
@@ -117,17 +123,16 @@ export default (props) => {
   }
 
   useEffect(() => {
-    const promise=fetchData();
+    const promise = fetchData();
     return promise;
-  }, [props.classID]);
+  }, [id]);
 
-  
-  function handleClose(){
+  function handleClose() {
     setShow(!show);
   }
   return (
     <Containter>
-    <ShowCode code={props.classID} handleClose={handleClose} open={show}/>
+      <ShowCode code={id} handleClose={handleClose} open={show} />
       <Section>
         <Header>
           <h2 style={{ color: "#007b83" }}>Teachers</h2>
@@ -143,7 +148,16 @@ export default (props) => {
         </Header>
         {peoples.map((ele) => {
           if (ele.uid !== teacher.uid) {
-            return <Member key={ele.uid} isAuthor={props.isAuthor} classID={props.classID} Uid={ele.uid} name={ele.name} photo={ele.photo} />;
+            return (
+              <Member
+                key={ele.uid}
+                isAuthor={is}
+                classID={id}
+                Uid={ele.uid}
+                name={ele.name}
+                photo={ele.photo}
+              />
+            );
           }
         })}
       </Section>

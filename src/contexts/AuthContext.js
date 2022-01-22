@@ -68,8 +68,8 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
   const db = getFirestore();
-  const [show, setShow] = useRecoilState(errorDialogAtom);
-  const [message, setMes] = useRecoilState(errorMessage);
+  const [, setShow] = useRecoilState(errorDialogAtom);
+  const [, setMes] = useRecoilState(errorMessage);
   async function signup(email, password, name) {
     const result = await createUserWithEmailAndPassword(auth, email, password);
     const user = result.user;
@@ -467,6 +467,15 @@ export function AuthProvider({ children }) {
       setShow(true);
     }
   }
+  async function isAuthor(classID) {
+    const classSnap = await getDoc(doc(db, "classes", classID));
+    const data = classSnap.data();
+    if (data.creatorUid === currentUser.uid) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   const value = {
     db,
@@ -493,6 +502,7 @@ export function AuthProvider({ children }) {
     updateAssign,
     updateClass,
     updateGrade,
+    isAuthor
   };
 
   useEffect(() => {

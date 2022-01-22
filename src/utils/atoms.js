@@ -13,10 +13,6 @@ const addDoc = atom({
   key: "addDoc",
   default: false,
 });
-const menu = atom({
-  key: "menu",
-  default: [true, false, false, false],
-});
 const errorDialogAtom = atom({
   key: "errorDialogAtom",
   default: false,
@@ -34,7 +30,6 @@ const updateClassDialog = atom({
 export {
   createDialogAtom,
   joinDialogAtom,
-  menu,
   errorDialogAtom,
   errorMessage,
   addDoc,

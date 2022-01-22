@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+/* eslint-disable no-unused-vars */
+import { useState } from "react";
 import "./style.css";
 import { createDialogAtom, joinDialogAtom } from "../../utils/atoms";
 import { useRecoilState } from "recoil";
