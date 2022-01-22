@@ -49,7 +49,11 @@ const SeeAllTasks = styled.a`
 `;
 
 export default (props) => {
+<<<<<<< HEAD
   const navigate=useNavigate();
+=======
+  const [mes, setMes] = useState("");
+>>>>>>> b4eed50909e876d569a54e1e0ee862202e45d9d7
   const [num, setNum] = useState(0);
   const { db, currentUser } = useAuth();
 
@@ -82,7 +86,11 @@ export default (props) => {
       <Informations>
         {num ? `Has ${num} work sue soon! ` : "Woohoo, no work due soon!"}
       </Informations>
+<<<<<<< HEAD
       <SeeAllTasks onClick={() => navigate("../classwork")}>
+=======
+      <SeeAllTasks onClick={() =>{ props.updateNav([false, true, false, false])}}>
+>>>>>>> b4eed50909e876d569a54e1e0ee862202e45d9d7
         See all tasks
       </SeeAllTasks>
     </Wrapper>
