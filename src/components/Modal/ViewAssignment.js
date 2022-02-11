@@ -16,7 +16,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import { useAuth } from "../../contexts/AuthContext";
 import { doc, onSnapshot } from "firebase/firestore";
-import { useNavigate,useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DateTimePicker from "@mui/lab/DateTimePicker";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
@@ -33,7 +33,7 @@ const Input = styled("input")({
 });
 
 export default function ViewAssignment(props) {
-  const {asignmentid}=useParams();
+  const { asignmentid } = useParams();
   const navigate = useNavigate();
   const { db, currentUser } = useAuth();
   const [currentAssign, setCurrentAssign] = useState({});
@@ -43,34 +43,35 @@ export default function ViewAssignment(props) {
   const [yourWork, setYourWork] = useState(null);
   const [grade, setGrade] = useState("");
   useEffect(() => {
-    const unsub = onSnapshot(
-      doc(db, "assignments", asignmentid),
-      (doc) => {
-        const data = doc.data();
-        setCurrentAssign(data);
-        if (data.authorID === currentUser.uid) {
-          setIsAuthor(true);
-        }
-        const TurnIn = data.turnIns[currentUser.uid] ? true : false;
-        if (TurnIn) {
-          setYourWork(data.turnIns[currentUser.uid].files);
-          setGrade(data.turnIns[currentUser.uid].grade);
-        }
-        setIsTurnIn(TurnIn);
-        setInterval(() => {
-          if (
-            data.isClose ||
-            TurnIn ||
-            (data.dueTime !== "" && data.dueTime < new Date().getTime())
-          ) {
-            setAccept(true);
-          } else {
-            setAccept(false);
-          }
-        }, 1000);
+    let id;
+    const unsub = onSnapshot(doc(db, "assignments", asignmentid), (doc) => {
+      const data = doc.data();
+      setCurrentAssign(data);
+      if (data.authorID === currentUser.uid) {
+        setIsAuthor(true);
       }
-    );
-    return unsub;
+      const TurnIn = data.turnIns[currentUser.uid] ? true : false;
+      if (TurnIn) {
+        setYourWork(data.turnIns[currentUser.uid].files);
+        setGrade(data.turnIns[currentUser.uid].grade);
+      }
+      setIsTurnIn(TurnIn);
+      id = setInterval(() => {
+        if (
+          data.isClose ||
+          TurnIn ||
+          (data.dueTime !== "" && data.dueTime < new Date().getTime())
+        ) {
+          setAccept(true);
+        } else {
+          setAccept(false);
+        }
+      }, 1000);
+    });
+    return () => {
+      unsub();
+      clearInterval(id);
+    };
   }, [asignmentid]);
   return (
     <div>
@@ -235,7 +236,7 @@ function Work(props) {
       </div>
       <List dense={false}>
         {props.files?.map((ele) => (
-          <ListDoc linkDownload={ele.linkDownload} name={ele.name} />
+          <ListDoc key={ele.linkDownload} linkDownload={ele.linkDownload} name={ele.name} />
         ))}
         {list.map((ele) => (
           <WorkDoc key={ele.name} name={ele.name} handleDel={handleDel} />

@@ -14,19 +14,18 @@ import styled from "styled-components";
 export default function Container() {
   const [classes, setClasses] = useState([]);
   const { currentUser, db } = useAuth();
-  async function fetchData() {
+
+  useEffect(() => {
     const q = query(
       collection(db, "users"),
       where("uid", "==", currentUser.uid)
     );
-    onSnapshot(q, async (querySnapshot) => {
+    const unsub = onSnapshot(q, async (querySnapshot) => {
       setClasses(querySnapshot.docs[0].data().enrolledClassrooms);
     });
-  }
-
-  useEffect(() => {
-    const pro=fetchData();
-    return pro;
+    return () => {
+      unsub();
+    };
   }, []);
 
   return (

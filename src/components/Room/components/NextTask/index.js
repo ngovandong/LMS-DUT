@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { onSnapshot, query, where, collection } from "firebase/firestore";
 import { useAuth } from "../../../../contexts/AuthContext";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 // STYLES
 const Wrapper = styled.div`
   display: flex;
@@ -49,16 +49,17 @@ const SeeAllTasks = styled.a`
 `;
 
 export default (props) => {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [num, setNum] = useState(0);
   const { db, currentUser } = useAuth();
 
-  async function fetch() {
+
+  useEffect(() => {
     const q = query(
       collection(db, "assignments"),
       where("classID", "==", props.classID)
     );
-    onSnapshot(q, async (querySnapshot) => {
+    const unsub = onSnapshot(q, async (querySnapshot) => {
       let i = 0;
       querySnapshot.docs.forEach((ele) => {
         const data = ele.data();
@@ -69,11 +70,9 @@ export default (props) => {
       });
       setNum(i);
     });
-  }
-
-  useEffect(() => {
-    const unSub = fetch();
-    return unSub;
+    return () => {
+      unsub();
+    };
   }, [props.classID]);
 
   return (

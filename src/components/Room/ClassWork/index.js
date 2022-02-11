@@ -18,10 +18,10 @@ export default (props) => {
   const [empty, setEmpty] = useState(false);
   const [is, setIs] = useState(false);
   async function fetchData() {
-    const result=await isAuthor(id);
+    const result = await isAuthor(id);
     setIs(result);
     const q = query(collection(db, "assignments"), where("classID", "==", id));
-    onSnapshot(q, async (querySnapshot) => {
+    return onSnapshot(q, async (querySnapshot) => {
       const listDocs = querySnapshot.docs.map((ele) => {
         const data = ele.data();
         const id = ele.id;
@@ -41,8 +41,11 @@ export default (props) => {
   }
 
   useEffect(() => {
-    const promise = fetchData();
-    return promise;
+    let unsub;
+    fetchData().then((un) => {
+      unsub = un;
+    });
+    return () => unsub();
   }, [id]);
 
   function handleAdd() {

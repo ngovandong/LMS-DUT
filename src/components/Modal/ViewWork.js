@@ -9,7 +9,7 @@ import Slide from "@mui/material/Slide";
 import Grid from "@mui/material/Grid";
 import { useAuth } from "../../contexts/AuthContext";
 import { getDoc, doc, onSnapshot } from "firebase/firestore";
-import { useNavigate,useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LinearProgress from "@mui/material/LinearProgress";
 
@@ -37,14 +37,15 @@ function CustomToolbar() {
 
 export default function ViewWork(props) {
   const navigate = useNavigate();
-  const { db,updateGrade } = useAuth();
+  const { db, updateGrade } = useAuth();
   const [rows, setRows] = useState([]);
   const [listFile, setListFile] = useState([]);
   const [listTurned, setListTurned] = useState({});
   const [title, setTitle] = useState("");
-  const {asignmentid}=useParams();
-  async function fetchData() {
-    onSnapshot(
+  const { asignmentid } = useParams();
+
+  useEffect(() => {
+    const unsub = onSnapshot(
       doc(db, "assignments", asignmentid),
       async (result) => {
         const data = result.data();
@@ -82,10 +83,7 @@ export default function ViewWork(props) {
         setRows(list);
       }
     );
-  }
-  useEffect(() => {
-    const unsub = fetchData();
-    return unsub;
+    return () => unsub();
   }, [asignmentid]);
 
   function handleRowClick(object) {
@@ -98,19 +96,15 @@ export default function ViewWork(props) {
   }
 
   function handleSave() {
-      updateGrade(listTurned,asignmentid);
+    updateGrade(listTurned, asignmentid);
   }
 
   function handleChangeValue(model) {
     for (const key in model) {
-      if (
-        Object.hasOwnProperty.call(model[key], "grade") 
-      ) {
+      if (Object.hasOwnProperty.call(model[key], "grade")) {
         listTurned[key].grade = model[key].grade.value;
       }
-      if (
-        Object.hasOwnProperty.call(model[key], "note")
-      ) {
+      if (Object.hasOwnProperty.call(model[key], "note")) {
         listTurned[key].note = model[key].note.value;
       }
     }

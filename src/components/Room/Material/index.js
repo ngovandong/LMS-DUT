@@ -8,7 +8,7 @@ import { useRecoilState } from "recoil";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { onSnapshot, query, where, collection } from "firebase/firestore";
-import {useParams} from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
 export const Containter = styled.div`
   padding: 1.5rem;
@@ -89,9 +89,7 @@ function Doc(props) {
             {props.name}
           </span>
         </div>
-        {
-        props.isAuthor && 
-        (
+        {props.isAuthor && (
           <AddBT onClick={handleClick}>
             <AiFillDelete size={20} color="#007b83" />
           </AddBT>
@@ -119,20 +117,17 @@ export const CreateBT = styled.button`
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default (props) => {
-  const { db,isAuthor } = useAuth();
+  const { db, isAuthor } = useAuth();
   const [documents, setDocuments] = useState([]);
   const [, setAdd] = useRecoilState(addDoc);
   const [empty, setEmpty] = useState(false);
-  const {id}=useParams();
+  const { id } = useParams();
   const [is, setIs] = useState(false);
   async function fetchData() {
-    const result=await isAuthor(id);
+    const result = await isAuthor(id);
     setIs(result);
-    const q = query(
-      collection(db, "documents"),
-      where("classID", "==", id)
-    );
-    onSnapshot(q, async (querySnapshot) => {
+    const q = query(collection(db, "documents"), where("classID", "==", id));
+    return onSnapshot(q, async (querySnapshot) => {
       const listDocs = querySnapshot.docs.map((ele) => ele.data());
       setDocuments(listDocs);
       if (listDocs.length === 0) setEmpty(true);
@@ -140,8 +135,10 @@ export default (props) => {
   }
 
   useEffect(() => {
-    const promise = fetchData();
-    return promise;
+    let unsub;
+    fetchData().then((un) => {
+      unsub = un;
+    });
   }, [id]);
   function handleAdd() {
     setAdd(true);
@@ -151,9 +148,7 @@ export default (props) => {
       {empty && <NoDoc />}
       <AddDoc classID={id} />
       <Section>
-        {
-        is && 
-        (
+        {is && (
           <Header>
             <CreateBT onClick={handleAdd}>
               <IoIosAdd color="#fff" size={30} />
