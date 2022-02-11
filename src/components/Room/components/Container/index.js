@@ -29,12 +29,13 @@ export default (props) => {
   function handleClick() {
     setNumPage(numPage + 5);
   }
-  async function fetchData() {
+
+  useEffect(() => {
     const q = query(
       collection(db, "announces"),
       where("classID", "==", props.classID)
     );
-    onSnapshot(q, async (querySnapshot) => {
+    const unsub = onSnapshot(q, async (querySnapshot) => {
       const listdata = await querySnapshot.docs.sort(
         (a, b) => b.data().date - a.data().date
       );
@@ -51,12 +52,7 @@ export default (props) => {
         setListDisplay(listdata);
       }
     });
-  }
-
-  useEffect(() => {
-    const promise = fetchData();
-
-    return promise;
+    return () => unsub();
   }, [props.classID, numPage]);
 
   return (

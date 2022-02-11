@@ -108,10 +108,10 @@ export default (props) => {
   const { db, isAuthor } = useAuth();
   const [is, setIs] = useState(false);
   async function fetchData() {
-    const result=await isAuthor(id);
+    const result = await isAuthor(id);
     setIs(result);
     const docRef = doc(db, "classes", id);
-    onSnapshot(docRef, async (result) => {
+    return onSnapshot(docRef, async (result) => {
       const classData = result.data();
       setPeoples(classData.users);
       setTeacher({
@@ -123,8 +123,11 @@ export default (props) => {
   }
 
   useEffect(() => {
-    const promise = fetchData();
-    return promise;
+    let unsub;
+    fetchData().then((un) => {
+      unsub = un;
+    });
+    return () => unsub();
   }, [id]);
 
   function handleClose() {

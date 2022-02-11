@@ -13,21 +13,18 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default ({ hide,handleClick }) => {
+export default ({ hide, handleClick }) => {
   const [classes, setClasses] = useState([]);
   const { currentUser, db } = useAuth();
-  async function fetchData() {
+  useEffect(() => {
     const q = query(
       collection(db, "users"),
       where("uid", "==", currentUser.uid)
     );
-    onSnapshot(q, async (querySnapshot) => {
+    const unsub = onSnapshot(q, async (querySnapshot) => {
       setClasses(querySnapshot.docs[0].data().enrolledClassrooms);
     });
-  }
-  useEffect(() => {
-    const promise=fetchData();
-    return promise;
+    return () => unsub();
   }, [currentUser]);
   function handle() {
     handleClick();
@@ -40,11 +37,7 @@ export default ({ hide,handleClick }) => {
           Home
         </Link>
         {classes.map((menuLine) => (
-          <Link
-            to={`/${menuLine.id}`}
-            key={menuLine.id}
-            onClick={handle}
-          >
+          <Link to={`/${menuLine.id}`} key={menuLine.id} onClick={handle}>
             <img src={menuLine.creatorPhoto} alt={menuLine.creatorName}></img>
             <span>{menuLine.name}</span>
           </Link>
