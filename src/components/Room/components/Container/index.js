@@ -1,81 +1,140 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { FiInbox } from "react-icons/fi";
 
-// COMPONENTS
 import CardPost from "../CardPost";
 import NextTask from "../NextTask";
+import Announcement from "../Announcement";
 
 import { useAuth } from "../../../../contexts/AuthContext";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import Announcement from "../Announcement";
-import { Button } from "@mui/material";
+import {
+  Card,
+  EmptyState,
+  EmptyIcon,
+  EmptyTitle,
+  EmptyText,
+  PrimaryButton,
+} from "../../styles/shared";
 
-const Wrapper = styled.div`
+const Layout = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 1.25rem;
   width: 100%;
-  margin: 0 auto;
+  min-width: 0;
+
+  @media (min-width: 900px) {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
 `;
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default (props) => {
+const Sidebar = styled.aside`
+  flex-shrink: 0;
+  width: 100%;
+  min-width: 0;
+
+  @media (min-width: 900px) {
+    width: min(16rem, 24%);
+    position: sticky;
+    top: calc(var(--header-height) + 1rem);
+  }
+`;
+
+const Feed = styled.section`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const LoadMoreWrap = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-bottom: 0.5rem;
+`;
+
+export default function Container({ classID }) {
   const { db } = useAuth();
-  const [hasMore, setHasmore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [listDisplay, setListDisplay] = useState([]);
-  const [, setAnnounce] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [numPage, setNumPage] = useState(5);
 
   function handleClick() {
-    setNumPage(numPage + 5);
+    setNumPage((prev) => prev + 5);
   }
 
   useEffect(() => {
     const q = query(
       collection(db, "announces"),
-      where("classID", "==", props.classID)
+      where("classID", "==", classID)
     );
-    const unsub = onSnapshot(q, async (querySnapshot) => {
-      const listdata = await querySnapshot.docs.sort(
+    const unsub = onSnapshot(q, (querySnapshot) => {
+      const listdata = querySnapshot.docs.sort(
         (a, b) => b.data().date - a.data().date
       );
-      setAnnounce(listdata);
+
       if (listdata.length > numPage) {
-        setHasmore(true);
-        const list = [];
-        for (let i = 0; i < numPage; i++) {
-          list.push(listdata[i]);
-        }
-        setListDisplay(list);
+        setHasMore(true);
+        setListDisplay(listdata.slice(0, numPage));
       } else {
-        setHasmore(false);
+        setHasMore(false);
         setListDisplay(listdata);
       }
+      setLoading(false);
     });
     return () => unsub();
-  }, [props.classID, numPage]);
+  }, [classID, db, numPage]);
 
   return (
-    <>
-      <Wrapper>
-        <NextTask updateNav={props.updateNav} classID={props.classID} />
-        <div style={{ width: "75%" }}>
-          <Announcement classID={props.classID} />
-          {listDisplay.map((item) => (
-            <CardPost key={item.id} announceID={item.id} data={item.data()} />
-          ))}
-          {hasMore && (
-            <Button
+    <Layout>
+      <Sidebar aria-label="Upcoming work">
+        <NextTask classID={classID} />
+      </Sidebar>
+
+      <Feed aria-label="Class announcements and posts">
+        <Announcement classID={classID} />
+
+        {!loading && listDisplay.length === 0 && (
+          <Card>
+            <EmptyState role="status">
+              <EmptyIcon aria-hidden="true">
+                <FiInbox />
+              </EmptyIcon>
+              <EmptyTitle>No posts yet</EmptyTitle>
+              <EmptyText>
+                Announcements and updates from your teacher will show up here.
+              </EmptyText>
+            </EmptyState>
+          </Card>
+        )}
+
+        {listDisplay.map((item) => (
+          <CardPost
+            key={item.id}
+            announceID={item.id}
+            data={item.data()}
+          />
+        ))}
+
+        {hasMore && (
+          <LoadMoreWrap>
+            <PrimaryButton
+              type="button"
               onClick={handleClick}
-              style={{ marginBottom: "20px" }}
-              variant="outlined"
-              startIcon={<ExpandMoreIcon />}
+              aria-label="Load more announcements"
             >
+              <ExpandMoreIcon fontSize="small" aria-hidden="true" />
               View more
-            </Button>
-          )}
-        </div>
-      </Wrapper>
-    </>
+            </PrimaryButton>
+          </LoadMoreWrap>
+        )}
+      </Feed>
+    </Layout>
   );
-};
+}

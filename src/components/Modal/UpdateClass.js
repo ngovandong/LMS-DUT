@@ -1,8 +1,9 @@
 import { useRecoilState } from "recoil";
 import { updateClassDialog } from "../../utils/atoms";
 import { Form, Button, Modal, Alert } from "react-bootstrap";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import { bootstrapModalProps, ensureModalStyles } from "./modalTheme";
 
 export default function UpdateClass(props) {
   const className = useRef();
@@ -12,58 +13,80 @@ export default function UpdateClass(props) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  ensureModalStyles();
+
   const handleClose = () => {
     setSuccess("");
     setError("");
     setShow(false);
   };
+
   async function handleSubmit() {
     setSuccess("");
     setError("");
     if (className.current.value !== "" && credits.current.value > 0) {
       try {
-        await updateClass(props.classID,className.current.value, credits.current.value);
-        setSuccess("Create class success!");
-        className.current.value = "";
-        credits.current.value = "";
+        await updateClass(props.classID, className.current.value, credits.current.value);
+        setSuccess("Class updated successfully!");
       } catch (err) {
         setError(err.message);
       }
     } else {
-      setError("Wrong input!");
+      setError("Please enter a class name and a credit value greater than zero.");
     }
   }
-  useEffect(() => {
-  }, [props.classID,props.className,props.credits]);
+
   return (
-    <>
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Create class</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {error && <Alert variant="danger">{error}</Alert>}
-          {success && <Alert variant="success">{success}</Alert>}
-          <Form>
-            <Form.Group id="className">
-              <Form.Label>Class name</Form.Label>
-              <Form.Control defaultValue={props.name} type="text" ref={className} required />
-            </Form.Group>
-            <Form.Group id="credits">
-              <Form.Label>Credits</Form.Label>
-              <Form.Control defaultValue={props.credits} type="number" ref={credits} required />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleSubmit}>
-            Update
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
+    <Modal
+      show={show}
+      onHide={handleClose}
+      aria-labelledby="update-class-title"
+      {...bootstrapModalProps}
+    >
+      <Modal.Header closeButton closeLabel="Close update class dialog">
+        <Modal.Title id="update-class-title">Edit class details</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {error && (
+          <Alert variant="danger" role="alert">
+            {error}
+          </Alert>
+        )}
+        {success && (
+          <Alert variant="success" role="status">
+            {success}
+          </Alert>
+        )}
+        <Form onSubmit={(e) => e.preventDefault()}>
+          <Form.Group className="mb-3" controlId="className">
+            <Form.Label>Class name</Form.Label>
+            <Form.Control
+              defaultValue={props.name}
+              type="text"
+              ref={className}
+              required
+            />
+          </Form.Group>
+          <Form.Group controlId="credits">
+            <Form.Label>Credits</Form.Label>
+            <Form.Control
+              defaultValue={props.credits}
+              type="number"
+              ref={credits}
+              min="1"
+              required
+            />
+          </Form.Group>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose} aria-label="Cancel editing class">
+          Cancel
+        </Button>
+        <Button variant="primary" onClick={handleSubmit} aria-label="Save class changes">
+          Save changes
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }

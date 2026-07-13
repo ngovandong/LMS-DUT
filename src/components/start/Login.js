@@ -1,10 +1,18 @@
 import React, { useRef, useState } from "react";
-import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { BsGoogle } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../../img/Logodhbk.jpg";
-import "bootstrap/dist/css/bootstrap.min.css";
+import AuthLayout from "./shared/AuthLayout";
+import AuthField from "./shared/AuthField";
+import {
+  AuthForm,
+  AuthAlert,
+  PrimaryButton,
+  GoogleButton,
+  AuthDivider,
+  InlineLinkRow,
+  AuthLink,
+} from "./shared/authStyles";
 
 export default function Login() {
   const emailRef = useRef();
@@ -12,7 +20,9 @@ export default function Login() {
   const { login, signInWithGoogle } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
+
   async function handleSubmit(e) {
     e.preventDefault();
     try {
@@ -22,7 +32,7 @@ export default function Login() {
       navigate("/");
     } catch (error) {
       console.log(error);
-      setError("Fail to log in!");
+      setError("Failed to log in. Please check your email and password.");
     }
     setLoading(false);
   }
@@ -30,88 +40,72 @@ export default function Login() {
   async function googleLogin(e) {
     e.preventDefault();
     try {
+      setError("");
+      setGoogleLoading(true);
       await signInWithGoogle();
       navigate("/");
     } catch (error) {
-      window.alert("Fail to log in!");
+      setError("Failed to sign in with Google. Please try again.");
     }
+    setGoogleLoading(false);
   }
+
   return (
-    <div style={{ height: "100vh", marginTop: "-5.7rem" }}>
-      <div
-        className="d-flex align-items-center justify-content-center"
-        style={{ height: "20%", flexDirection: "column" }}
-      >
-        <img
-          src={logo}
-          style={{
-            width: "auto",
-            height: "70%",
-            margin: "20px",
-            paddingTop: "20px",
-          }}
-          alt=""
+    <AuthLayout
+      title="Log in"
+      subtitle="Welcome back. Pick up right where you left off."
+      footerText="Need an account?"
+      footerLinkText="Sign up"
+      footerLinkTo="/signup"
+    >
+      {error && (
+        <AuthAlert $variant="danger" role="alert">
+          {error}
+        </AuthAlert>
+      )}
+
+      <AuthForm onSubmit={handleSubmit} noValidate>
+        <AuthField
+          id="login-email"
+          label="Email"
+          type="email"
+          inputRef={emailRef}
+          required
+          autoComplete="email"
+          placeholder="you@university.edu"
         />
-        <h4>LMS-DUT</h4>
-      </div>
-      <div
-        className="d-flex align-items-center justify-content-center"
-        style={{ height: "80%" }}
-      >
-        <div>
-          <Card className="shadow p-3 mb-5 bg-white rounded">
-            <Card.Body>
-              <h2 className=" text-center mb-4">Log In</h2>
-              {error && <Alert variant="danger">{error}</Alert>}
-              <Form onSubmit={handleSubmit}>
-                <Form.Group id="email">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control type="email" ref={emailRef} required />
-                </Form.Group>
-                <Form.Group id="password">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control type="password" ref={passwordRef} required />
-                </Form.Group>
-                <br />
-                <Button
-                  disabled={loading}
-                  className="w-100 text-uppercase fw-bold"
-                  type="submit"
-                >
-                  Log In
-                </Button>
-                <br />
-                <br />
-                <Button
-                  onClick={googleLogin}
-                  className="w-100 text-uppercase fw-bold"
-                  style={{ backgroundColor: "#ea4335", border: "0" }}
-                >
-                  <BsGoogle style={{ margin: "0 8px 4px" }} /> Log in with
-                  Google
-                </Button>
-                <div className="w-100 text-center mt-3">
-                  <Link
-                    to="/forgot-password"
-                    style={{ textDecoration: "none" }}
-                  >
-                    Forget password
-                  </Link>
-                </div>
-              </Form>
-            </Card.Body>
-          </Card>
-          <div className="w-100 text-center mt-2">
-            Need an account?
-            <Link
-              to="/signup"
-              style={{ textDecoration: "none", marginLeft: "5px" }}
-            >
-              Sign Up
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+        <AuthField
+          id="login-password"
+          label="Password"
+          type="password"
+          inputRef={passwordRef}
+          required
+          autoComplete="current-password"
+          placeholder="Enter your password"
+        />
+
+        <PrimaryButton type="submit" disabled={loading || googleLoading}>
+          {loading ? "Logging in…" : "Log in"}
+        </PrimaryButton>
+
+        <AuthDivider>or</AuthDivider>
+
+        <GoogleButton
+          type="button"
+          onClick={googleLogin}
+          disabled={loading || googleLoading}
+          aria-label="Log in with Google"
+        >
+          <BsGoogle aria-hidden="true" />
+          {googleLoading ? "Connecting…" : "Continue with Google"}
+        </GoogleButton>
+
+        <InlineLinkRow>
+          <AuthLink as={Link} to="/forgot-password">
+            Forgot password?
+          </AuthLink>
+        </InlineLinkRow>
+      </AuthForm>
+    </AuthLayout>
   );
 }

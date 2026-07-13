@@ -1,62 +1,87 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-// STYLE
 import { CardContainer } from "./styles";
 import { Link } from "react-router-dom";
 import { IoIosFolderOpen, IoMdPerson, IoMdMore } from "react-icons/io";
 
-export default function Card(item) {
+export default function Card({ data }) {
   const navigate = useNavigate();
+
   function handleClick() {
-    navigate(`${item.data.id}`);
+    navigate(`${data.id}`);
   }
+
   function handleOpenFile(e) {
     e.stopPropagation();
-    navigate(`${item.data.id}/material`);
+    navigate(`${data.id}/material`);
   }
+
   function handleOpenPeople(e) {
     e.stopPropagation();
-    navigate(`${item.data.id}/people`);
+    navigate(`${data.id}/people`);
   }
+
+  const creatorLabel = data.creatorName || "Class instructor";
+
   return (
-    <>
-      <CardContainer background={item.data.background} onClick={handleClick}>
-        <ul>
-          <li>
-            <header>
-              <Link to={`${item.data.id}`}>{item.data.name}</Link>
+    <CardContainer
+      $background={data.background}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`Open class ${data.name}`}
+    >
+      <header>
+        <button
+          type="button"
+          className="options-btn"
+          aria-label={`More options for ${data.name}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <IoMdMore size={22} aria-hidden="true" />
+        </button>
 
-              <button className="optionsCardBtn">
-                <IoMdMore size={25} color="white" />
-              </button>
+        <Link
+          className="class-link"
+          to={`${data.id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {data.name}
+        </Link>
+        <p className="creator-name">{creatorLabel}</p>
+      </header>
 
-              <p>{item.data.creatorName}</p>
-            </header>
+      <div className="card-body">
+        <img
+          className="creator-avatar"
+          src={data.creatorPhoto}
+          alt={creatorLabel}
+        />
+      </div>
 
-            <div className="whitespace">
-              <img src={item.data.creatorPhoto} alt="Adorable!" />
-            </div>
+      <div className="footer-card">
+        <button
+          type="button"
+          aria-label={`Open materials for ${data.name}`}
+          onClick={handleOpenFile}
+        >
+          <IoIosFolderOpen size={22} aria-hidden="true" />
+        </button>
 
-            <div className="footerCard">
-              <button>
-                <IoIosFolderOpen
-                  size={25}
-                  color="rgb(77, 72, 72)"
-                  onClick={handleOpenFile}
-                />
-              </button>
-
-              <button>
-                <IoMdPerson
-                  size={25}
-                  color="rgb(77, 72, 72)"
-                  onClick={handleOpenPeople}
-                />
-              </button>
-            </div>
-          </li>
-        </ul>
-      </CardContainer>
-    </>
+        <button
+          type="button"
+          aria-label={`View people in ${data.name}`}
+          onClick={handleOpenPeople}
+        >
+          <IoMdPerson size={22} aria-hidden="true" />
+        </button>
+      </div>
+    </CardContainer>
   );
 }

@@ -34,8 +34,9 @@ export default function ClassGroup() {
   return (
     <div style={{ marginRight: "15px" }}>
       <IconButton
-        id="basic-button"
-        aria-controls="basic-menu"
+        id="class-actions-button"
+        aria-label="Create or join a class"
+        aria-controls="class-actions-menu"
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
         onClick={handleClick}
@@ -43,12 +44,12 @@ export default function ClassGroup() {
         <AddIcon />
       </IconButton>
       <Menu
-        id="basic-menu"
+        id="class-actions-menu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
         MenuListProps={{
-          "aria-labelledby": "basic-button",
+          "aria-labelledby": "class-actions-button",
         }}
       >
         <MenuItem
@@ -57,7 +58,7 @@ export default function ClassGroup() {
             handleJoin();
           }}
         >
-          Join
+          Join a class
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -65,7 +66,7 @@ export default function ClassGroup() {
             handleCreate();
           }}
         >
-          Create
+          Create a class
         </MenuItem>
       </Menu>
     </div>

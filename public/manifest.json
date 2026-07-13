@@ -1,6 +1,7 @@
 {
   "short_name": "LMS-DUT",
-  "name": "LMS-DUT",
+  "name": "LMS-DUT Learning Management System",
+  "description": "Classes, assignments, materials, and school communities in one friendly place.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,6 +11,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#0891b2",
+  "background_color": "#f8fafc"
 }

@@ -1,101 +1,153 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-
-// ICONS
 import { IoIosArrowDown } from "react-icons/io";
+import { SkeletonBlock } from "../../styles/shared";
 
-const Banner = styled.div`
-  margin: 0 auto 40px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+const BannerCard = styled.section`
+  margin: 0 auto 1.5rem;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: var(--surface);
 `;
 
-const Header = styled.div`
+const Hero = styled.div`
   position: relative;
-  height: 240px;
-  background: url(${({ background }) => (true ? background : background)});
+  min-height: clamp(10rem, 32vw, 15rem);
+  background: ${({ $background }) =>
+    $background
+      ? `linear-gradient(180deg, rgba(15, 23, 42, 0.15) 0%, rgba(15, 23, 42, 0.55) 100%), url(${$background})`
+      : "linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 55%, #0f4c5c 100%)"};
   background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(1rem, 4vw, 1.75rem);
 `;
 
-const Title = styled.p`
-  padding: 25px 10px 32px 25px;
-  font-weight: bold;
-  color: snow;
-  font-size: 2rem;
-
-  @media (max-width: 450px) {
-    font-size: 1.2rem;
-  }
+const ClassName = styled.h1`
+  font-size: clamp(1.35rem, 5vw, 2rem);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  text-shadow: 0 2px 12px rgba(15, 23, 42, 0.35);
+  word-break: break-word;
 `;
 
 const Teacher = styled.p`
-  padding-left: 25px;
-  color: snow;
-  font-size: 1.2rem;
+  margin-top: 0.45rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+`;
 
-  padding-bottom: 30px;
+const ToggleWrap = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 0.75rem;
+`;
 
-  @media (max-width: 450px) {
-    font-size: 0.8rem;
+const DetailToggle = styled.button`
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  transform: rotate(${({ $open }) => ($open ? "180deg" : "0deg")});
+  transition: transform 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.28);
   }
 `;
 
-const DetailButton = styled.button`
-  position: absolute;
-  left: 50%;
-
-  rotate: ${({ status }) => (status ? "180deg" : "0deg")};
-
-  transition: rotate ease 0.2s;
+const DetailPanel = styled.div`
+  padding: 1.1rem clamp(1rem, 3vw, 1.5rem);
+  background: var(--surface-soft);
+  border-top: 1px solid var(--surface-border);
+  display: grid;
+  gap: 0.65rem;
 `;
 
-const DetailBanner = styled.div`
-  position: relative;
-  box-shadow: 3px 3px 5px #00000057;
-  height: 100%;
-  border-radius: 0 0 8px 8px;
-  padding: 20px;
-  line-height: 30px;
+const DetailRow = styled.p`
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  word-break: break-word;
+
+  strong {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
 `;
 
-const DivButton = styled.div`
-  width: 100%;
-  height: 20px;
-  position: relative;
-  bottom: 0;
+const LoadingHero = styled.div`
+  min-height: clamp(10rem, 32vw, 15rem);
+  padding: clamp(1rem, 4vw, 1.75rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  background: linear-gradient(
+    135deg,
+    var(--brand-50) 0%,
+    var(--surface-soft) 100%
+  );
 `;
-// eslint-disable-next-line import/no-anonymous-default-export
-export default (props) => {
+
+export default function Banner({ data, id }) {
   const [showDetail, setShowDetail] = useState(false);
+  const isLoading = !data?.name;
 
-  const onClick = (e) => setShowDetail(!showDetail);
+  if (isLoading) {
+    return (
+      <BannerCard aria-busy="true" aria-label="Loading class information">
+        <LoadingHero>
+          <SkeletonBlock $width="70%" $height="1.75rem" />
+          <SkeletonBlock $width="45%" $height="0.9rem" />
+        </LoadingHero>
+      </BannerCard>
+    );
+  }
 
   return (
-    <Banner>
-      <Header background={props.data.background}>
-        <Title>{props.data.name}</Title>
-        <Teacher>{props.data.creatorName}</Teacher>
-
-        <DivButton>
-          <DetailButton status={showDetail} onClick={(e) => onClick(e)}>
-            <IoIosArrowDown size={25} color="snow" />
-          </DetailButton>
-        </DivButton>
-      </Header>
+    <BannerCard aria-label={`${data.name} class banner`}>
+      <Hero $background={data.background}>
+        <ClassName>{data.name}</ClassName>
+        <Teacher>{data.creatorName}</Teacher>
+        <ToggleWrap>
+          <DetailToggle
+            type="button"
+            $open={showDetail}
+            onClick={() => setShowDetail((prev) => !prev)}
+            aria-expanded={showDetail}
+            aria-controls="class-detail-panel"
+            aria-label={showDetail ? "Hide class details" : "Show class details"}
+          >
+            <IoIosArrowDown size={22} aria-hidden="true" />
+          </DetailToggle>
+        </ToggleWrap>
+      </Hero>
       {showDetail && (
-        <DetailBanner>
-          <p>
-            <strong>Credits:</strong> {props.data.credits}{" "}
-          </p>
-          <p>
-            <strong>Join code: </strong>
-            {props.id}{" "}
-          </p>
-        </DetailBanner>
+        <DetailPanel id="class-detail-panel" role="region" aria-label="Class details">
+          <DetailRow>
+            <strong>Credits:</strong> {data.credits}
+          </DetailRow>
+          <DetailRow>
+            <strong>Join code:</strong> {id}
+          </DetailRow>
+        </DetailPanel>
       )}
-    </Banner>
+    </BannerCard>
   );
-};
+}

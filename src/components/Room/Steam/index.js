@@ -4,23 +4,24 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { doc, onSnapshot } from "firebase/firestore";
+import { RoomPage } from "../styles/shared";
 
-export default function Stream(props) {
+export default function Stream() {
   const { id } = useParams();
   const [currentClass, setCurrentClass] = useState({});
   const { db } = useAuth();
 
   useEffect(() => {
-    const unsub = onSnapshot(doc(db, "classes", id), async (doc) => {
-      const data = await doc.data();
-      setCurrentClass(data);
+    const unsub = onSnapshot(doc(db, "classes", id), (classDoc) => {
+      setCurrentClass(classDoc.data() || {});
     });
     return () => unsub();
-  }, [id]);
+  }, [db, id]);
+
   return (
-    <div style={{ width: "80%", maxWidth: "1000px", margin: "auto" }}>
-      <Banner data={currentClass} />
+    <RoomPage aria-label="Class stream">
+      <Banner data={currentClass} id={id} />
       <Container classID={id} />
-    </div>
+    </RoomPage>
   );
 }

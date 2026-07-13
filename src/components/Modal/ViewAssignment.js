@@ -14,6 +14,7 @@ import TextField from "@mui/material/TextField";
 import Avatar from "@mui/material/Avatar";
 import FolderIcon from "@mui/icons-material/Folder";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
+import Box from "@mui/material/Box";
 import { useAuth } from "../../contexts/AuthContext";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router";
@@ -24,10 +25,21 @@ import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
+import {
+  APP_BAR_SX,
+  FILE_LINK_SX,
+  LIST_ITEM_SX,
+  MAIN_CONTENT_SX,
+  MAIN_GRID_SX,
+  SIDE_PANEL_SX,
+  STATUS_CHIP_SX,
+  WORK_CARD_SX,
+} from "./modalTheme";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
+
 const Input = styled("input")({
   display: "none",
 });
@@ -42,6 +54,7 @@ export default function ViewAssignment(props) {
   const [isTurnIn, setIsTurnIn] = useState(false);
   const [yourWork, setYourWork] = useState(null);
   const [grade, setGrade] = useState("");
+
   useEffect(() => {
     let id;
     const unsub = onSnapshot(doc(db, "assignments", asignmentid), (doc) => {
@@ -72,98 +85,96 @@ export default function ViewAssignment(props) {
       unsub();
       clearInterval(id);
     };
-  }, [asignmentid]);
-  return (
-    <div>
-      <Dialog fullScreen open={true} TransitionComponent={Transition}>
-        <AppBar sx={{ position: "relative", background: "#007b83" }}>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={() => navigate(-1)}
-              aria-label="close"
-            >
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Assignment
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Grid container spacing={2}>
-          <Grid item xs={9} sx={{ height: "calc(100vh - 64px)" }}>
-            <div style={{ height: "100%", padding: "20px" }}>
-              <div style={{ marginBottom: "15px" }}>
-                <TextField
-                  id="outlined"
-                  fullWidth
-                  label="Title"
-                  disabled
-                  value={currentAssign.title}
-                />
-              </div>
-              <div style={{ marginBottom: "15px" }}>
-                <TextField
-                  id="filled-multiline-static"
-                  label="Description"
-                  multiline
-                  fullWidth
-                  rows={4}
-                  disabled
-                  defaultValue={currentAssign.des}
-                />
-              </div>
+  }, [asignmentid, currentUser.uid, db]);
 
-              <List dense={false}>
-                {currentAssign.files?.map((file) => (
-                  <ListDoc
-                    key={file.name}
-                    name={file.name}
-                    linkDownload={file.linkDownload}
-                  />
-                ))}
-              </List>
-            </div>
-          </Grid>
-          <Grid item xs={3}>
-            <div
-              style={{
-                borderLeft: "1px #ccc solid",
-                padding: "40px",
-                height: "calc(100vh - 64px)",
-              }}
-            >
-              {currentAssign.dueTime !== "" && (
-                <LocalizationProvider
-                  style={{ width: "100%" }}
-                  dateAdapter={AdapterDateFns}
-                >
-                  <DateTimePicker
-                    renderInput={(params) => <TextField {...params} />}
-                    label="Due time"
-                    value={currentAssign.dueTime}
-                    readOnly
-                    onChange={() => {}}
-                    minDateTime={new Date()}
-                    style={{ width: "100%" }}
-                  />
-                </LocalizationProvider>
-              )}
-              {!isAuthor && (
-                <Work
-                  assignID={asignmentid}
-                  accept={accept}
-                  isTurnIn={isTurnIn}
-                  files={yourWork}
-                  grade={grade}
+  return (
+    <Dialog fullScreen open={true} TransitionComponent={Transition}>
+      <AppBar sx={APP_BAR_SX}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={() => navigate(-1)}
+            aria-label="Go back to classwork"
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="h1">
+            Assignment
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Grid container spacing={{ xs: 0, md: 2 }}>
+        <Grid item xs={12} md={9} sx={MAIN_GRID_SX}>
+          <Box sx={MAIN_CONTENT_SX}>
+            <Box sx={{ mb: 2 }}>
+              <TextField
+                id="assignment-title"
+                fullWidth
+                label="Title"
+                disabled
+                value={currentAssign.title || ""}
+              />
+            </Box>
+            <Box sx={{ mb: 2 }}>
+              <TextField
+                id="assignment-description"
+                label="Description"
+                multiline
+                fullWidth
+                rows={4}
+                disabled
+                value={currentAssign.des || ""}
+              />
+            </Box>
+            {currentAssign.files?.length > 0 && (
+              <Typography
+                variant="subtitle2"
+                sx={{ color: "var(--text-muted)", mb: 1, fontWeight: 600 }}
+              >
+                Attachments
+              </Typography>
+            )}
+            <List dense={false} aria-label="Assignment attachments">
+              {currentAssign.files?.map((file) => (
+                <ListDoc
+                  key={file.name}
+                  name={file.name}
+                  linkDownload={file.linkDownload}
                 />
-              )}
-            </div>
-          </Grid>
+              ))}
+            </List>
+          </Box>
         </Grid>
-      </Dialog>
-    </div>
+        <Grid item xs={12} md={3}>
+          <Box sx={SIDE_PANEL_SX}>
+            {currentAssign.dueTime !== "" && (
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DateTimePicker
+                  renderInput={(params) => (
+                    <TextField {...params} fullWidth aria-label="Due date and time" />
+                  )}
+                  label="Due date"
+                  value={currentAssign.dueTime}
+                  readOnly
+                  onChange={() => {}}
+                  minDateTime={new Date()}
+                />
+              </LocalizationProvider>
+            )}
+            {!isAuthor && (
+              <Work
+                assignID={asignmentid}
+                accept={accept}
+                isTurnIn={isTurnIn}
+                files={yourWork}
+                grade={grade}
+              />
+            )}
+          </Box>
+        </Grid>
+      </Grid>
+    </Dialog>
   );
 }
 
@@ -172,10 +183,12 @@ function Work(props) {
   const { addWork } = useAuth();
   const navigate = useNavigate();
   const [empty, setEmpty] = useState(true);
+
   function addDoc() {
     const fileIn = document.getElementById("work-files");
     fileIn.click();
   }
+
   function fileChange() {
     const fileIn = document.getElementById("work-files");
     if (fileIn.files[0]) {
@@ -191,6 +204,7 @@ function Work(props) {
       }
     }
   }
+
   function handleDel(name) {
     const newList = [];
     list.forEach((ele) => {
@@ -209,32 +223,34 @@ function Work(props) {
   }
 
   useEffect(() => {
-    if (list.length === 0) setEmpty(true);
-    else setEmpty(false);
+    setEmpty(list.length === 0);
   }, [props.accept, list]);
 
   return (
-    <div
-      style={{
-        boxShadow:
-          "0 1px 2px 0 rgb(60 64 67 / 30%), 0 2px 6px 2px rgb(60 64 67 / 15%)",
-        borderRadius: "0.5rem",
-        padding: "20px",
-        marginTop: "20px",
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h4 style={{ fontSize: "1.375rem" }}>YOUR WORK</h4>
-        <span style={{ color: "#129eaf" }}>
+    <Box sx={WORK_CARD_SX} component="section" aria-label="Your work">
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 1,
+          mb: 1,
+        }}
+      >
+        <Typography variant="h6" component="h2" sx={{ fontWeight: 700 }}>
+          Your work
+        </Typography>
+        <Typography component="span" sx={STATUS_CHIP_SX}>
           {props.isTurnIn ? "Turned in" : "Assigned"}
-        </span>
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        {props.isTurnIn && props.grade && (
-          <span style={{ color: "#129eaf" }}>{`Grade: ${props.grade}`}</span>
-        )}
-      </div>
-      <List dense={false}>
+        </Typography>
+      </Box>
+      {props.isTurnIn && props.grade && (
+        <Typography sx={{ ...STATUS_CHIP_SX, display: "block", mb: 1 }}>
+          Grade: {props.grade}
+        </Typography>
+      )}
+      <List dense={false} aria-label="Submitted and pending files">
         {props.files?.map((ele) => (
           <ListDoc key={ele.linkDownload} linkDownload={ele.linkDownload} name={ele.name} />
         ))}
@@ -242,19 +258,18 @@ function Work(props) {
           <WorkDoc key={ele.name} name={ele.name} handleDel={handleDel} />
         ))}
       </List>
-      <Input onChange={fileChange} id="work-files" type="file" />
+      <Input onChange={fileChange} id="work-files" type="file" aria-hidden="true" />
       <Button
         variant="outlined"
-        style={{
-          margin: "10px 0",
-        }}
+        sx={{ my: 1.25 }}
         color="success"
         fullWidth
         startIcon={<AddIcon />}
         onClick={addDoc}
         disabled={props.accept}
+        aria-label="Add work file"
       >
-        Add work
+        Add file
       </Button>
       <Button
         fullWidth
@@ -262,10 +277,11 @@ function Work(props) {
         onClick={handleTurnIn}
         disabled={props.accept || empty}
         color="success"
+        aria-label="Turn in assignment"
       >
         Turn in
       </Button>
-    </div>
+    </Box>
   );
 }
 
@@ -275,16 +291,16 @@ function WorkDoc(props) {
       secondaryAction={
         <IconButton
           edge="end"
-          aria-label="delete"
+          aria-label={`Remove ${props.name}`}
           onClick={() => props.handleDel(props.name)}
         >
           <DeleteIcon />
         </IconButton>
       }
-      sx={{ borderBottom: "1px #ccc solid" }}
+      sx={LIST_ITEM_SX}
     >
       <ListItemAvatar>
-        <Avatar>
+        <Avatar sx={{ bgcolor: "var(--brand-100)", color: "var(--brand-700)" }}>
           <FolderIcon />
         </Avatar>
       </ListItemAvatar>
@@ -295,20 +311,22 @@ function WorkDoc(props) {
 
 export function ListDoc(props) {
   return (
-    <a
-      style={{ textDecoration: "none", color: "#000" }}
+    <Box
+      component="a"
+      sx={FILE_LINK_SX}
       href={props.linkDownload}
       target="_blank"
       rel="noopener noreferrer"
+      aria-label={`Open ${props.name}`}
     >
-      <ListItem sx={{ borderBottom: "1px #ccc solid" }}>
+      <ListItem sx={LIST_ITEM_SX}>
         <ListItemAvatar>
-          <Avatar>
+          <Avatar sx={{ bgcolor: "var(--brand-100)", color: "var(--brand-700)" }}>
             <FolderIcon />
           </Avatar>
         </ListItemAvatar>
         <ListItemText primary={props.name} />
       </ListItem>
-    </a>
+    </Box>
   );
 }

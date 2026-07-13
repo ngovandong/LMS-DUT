@@ -1,11 +1,14 @@
 import RelativeTime from "@yaireo/relative-time";
+
 export default function getTime(time) {
-  
   const relativeTime = new RelativeTime();
-  let newTime=relativeTime.from(time);
-  if(time>= new Date().getTime()){
-    return newTime.replace("in","Due")+" later";
+  const formatted = relativeTime.from(time);
+
+  if (time >= new Date().getTime()) {
+    return formatted.startsWith("in ")
+      ? formatted.replace("in ", "Due in ")
+      : `Due ${formatted}`;
   }
-  return newTime;
-  
+
+  return formatted;
 }

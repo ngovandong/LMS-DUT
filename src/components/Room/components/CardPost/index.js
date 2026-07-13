@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import CommentIcon from "@mui/icons-material/Comment";
 import {
   Wrapper,
@@ -8,62 +8,70 @@ import {
   PostOwner,
   DateOfPost,
   Description,
+  CommentsSection,
+  ShowCommentsButton,
+  CommentCount,
 } from "./styles";
 
 import Comments from "../Comments";
 import InputComment from "../InputComment";
 import getTime from "../../../../funtions/getRelativeTime";
-import { IconButton } from "@mui/material";
-import Badge from "@mui/material/Badge";
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default (props) => {
-  const comments = props.data.comments;
-  const [hasMore, setHasmore] = useState(comments.length > 1);
+export default function CardPost({ announceID, data }) {
+  const comments = useMemo(() => data.comments || [], [data.comments]);
+  const [hasMore, setHasMore] = useState(comments.length > 1);
   const [listDisplay, setListDisplay] = useState([]);
+
   useEffect(() => {
-    if (hasMore) {
-      const list = [];
-      list.push(comments[comments.length - 1]);
-      setListDisplay(list);
+    if (comments.length > 1) {
+      setHasMore(true);
+      setListDisplay([comments[comments.length - 1]]);
     } else {
+      setHasMore(false);
       setListDisplay(comments);
     }
   }, [comments]);
 
-  function handleClick() {
-    setHasmore(false);
+  function handleShowAllComments() {
+    setHasMore(false);
     setListDisplay(comments);
   }
+
+  const hiddenCount = comments.length - listDisplay.length;
+
   return (
-    <>
-      <Wrapper>
-        <Header>
-          <Avatar src={props.data.authorImg} />
+    <Wrapper aria-label={`Post by ${data.authorName}`}>
+      <Header>
+        <Avatar src={data.authorImg} alt="" aria-hidden="true" />
+        <Informations>
+          <PostOwner>{data.authorName}</PostOwner>
+          <DateOfPost dateTime={new Date(data.date).toISOString()}>
+            {getTime(data.date)}
+          </DateOfPost>
+        </Informations>
+      </Header>
 
-          <Informations>
-            <PostOwner>{props.data.authorName}</PostOwner>
-            <DateOfPost>{getTime(props.data.date)}</DateOfPost>
-          </Informations>
-        </Header>
+      <Description>{data.message}</Description>
 
-        <Description> {props.data.message} </Description>
-        {hasMore && (
-          <IconButton onClick={handleClick} style={{ marginLeft: "20px" }}>
-            <Badge
-              badgeContent={comments.length - listDisplay.length}
-              color="primary"
-            >
-              <CommentIcon style={{ color: "#999" }} />
-            </Badge>
-          </IconButton>
+      <CommentsSection aria-label="Comments">
+        {hasMore && hiddenCount > 0 && (
+          <ShowCommentsButton
+            type="button"
+            onClick={handleShowAllComments}
+            aria-label={`Show ${hiddenCount} more ${hiddenCount === 1 ? "comment" : "comments"}`}
+          >
+            <CommentIcon style={{ fontSize: "1rem" }} aria-hidden="true" />
+            Show more comments
+            <CommentCount aria-hidden="true">{hiddenCount}</CommentCount>
+          </ShowCommentsButton>
         )}
+
         {listDisplay.map((item, index) => (
-          <Comments key={index} data={item} />
+          <Comments key={`${item.date}-${index}`} data={item} />
         ))}
 
-        <InputComment announceID={props.announceID} />
-      </Wrapper>
-    </>
+        <InputComment announceID={announceID} />
+      </CommentsSection>
+    </Wrapper>
   );
-};
+}

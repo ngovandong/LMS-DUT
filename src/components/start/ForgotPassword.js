@@ -1,9 +1,15 @@
 import React, { useRef, useState } from "react";
-import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import logo from "../../img/Logodhbk.jpg";
+import AuthLayout from "./shared/AuthLayout";
+import AuthField from "./shared/AuthField";
+import {
+  AuthForm,
+  AuthAlert,
+  PrimaryButton,
+  InlineLinkRow,
+  AuthLink,
+} from "./shared/authStyles";
 
 export default function ForgotPassword() {
   const emailRef = useRef();
@@ -11,6 +17,7 @@ export default function ForgotPassword() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
   async function handleSubmit(e) {
     e.preventDefault();
     try {
@@ -18,73 +25,54 @@ export default function ForgotPassword() {
       setMessage("");
       setLoading(true);
       await resetPassword(emailRef.current.value);
-      setMessage("Check your inbox for further instructions");
+      setMessage("Check your inbox for further instructions.");
     } catch (error) {
       console.log(error);
-      setError("Fail to reset password!");
+      setError("Failed to reset password. Please try again.");
     }
     setLoading(false);
   }
+
   return (
-    <div style={{ height: "100vh", marginTop: "-5.7rem" }}>
-      <div
-        className="d-flex align-items-center justify-content-center"
-        style={{ height: "20%", flexDirection: "column" }}
-      >
-        <img
-          src={logo}
-          style={{
-            width: "auto",
-            height: "70%",
-            margin: "20px",
-            paddingTop: "20px",
-          }}
-          alt=""
+    <AuthLayout
+      title="Forgot password"
+      subtitle="Enter your email and we will send you a reset link."
+      footerText="Need an account?"
+      footerLinkText="Sign up"
+      footerLinkTo="/signup"
+    >
+      {error && (
+        <AuthAlert $variant="danger" role="alert">
+          {error}
+        </AuthAlert>
+      )}
+      {message && (
+        <AuthAlert $variant="success" role="status">
+          {message}
+        </AuthAlert>
+      )}
+
+      <AuthForm onSubmit={handleSubmit} noValidate>
+        <AuthField
+          id="forgot-email"
+          label="Email"
+          type="email"
+          inputRef={emailRef}
+          required
+          autoComplete="email"
+          placeholder="you@university.edu"
         />
-        <h4>LMS-DUT</h4>
-      </div>
-      <div
-        className="d-flex align-items-center justify-content-center"
-        style={{ height: "80%" }}
-      >
-        <div>
-          <Card className="shadow p-3 mb-5 bg-white rounded">
-            <Card.Body>
-              <h2 className=" text-center mb-4">Log In</h2>
-              {error && <Alert variant="danger">{error}</Alert>}
-              {message && <Alert variant="success">{message}</Alert>}
-              <Form onSubmit={handleSubmit}>
-                <Form.Group id="email">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control type="email" ref={emailRef} required />
-                </Form.Group>
-                <br />
-                <Button
-                  disabled={loading}
-                  className="w-100 text-uppercase fw-bold"
-                  type="submit"
-                >
-                  Reset Password
-                </Button>
-                <div className="w-100 text-center mt-3">
-                  <Link to="/login" style={{ textDecoration: "none" }}>
-                    Log In
-                  </Link>
-                </div>
-              </Form>
-            </Card.Body>
-          </Card>
-          <div className="w-100 text-center mt-2">
-            Need an account?
-            <Link
-              to="/signup"
-              style={{ textDecoration: "none", marginLeft: "5px" }}
-            >
-              Sign Up
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+
+        <PrimaryButton type="submit" disabled={loading}>
+          {loading ? "Sending link…" : "Reset password"}
+        </PrimaryButton>
+
+        <InlineLinkRow>
+          <AuthLink as={Link} to="/login">
+            Back to log in
+          </AuthLink>
+        </InlineLinkRow>
+      </AuthForm>
+    </AuthLayout>
   );
 }

@@ -193,10 +193,10 @@ export function AuthProvider({ children }) {
           users: users,
         });
       } else {
-        throw Error("Class don't exist");
+        throw Error("This class doesn't exist.");
       }
     } else {
-      throw Error("Class already exist");
+      throw Error("You are already enrolled in this class.");
     }
   }
   async function deleteMember(Uid, classID) {
@@ -508,14 +508,29 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsubcribe = auth.onAuthStateChanged((user) => {
       setCurrentUser(user);
-      setLoading(currentUser);
+      setLoading(false);
     });
     return unsubcribe;
   }, []);
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {loading ? (
+        <div
+          role="status"
+          aria-label="Loading LMS-DUT"
+          style={{
+            minHeight: "calc(100vh - var(--header-height))",
+            display: "grid",
+            placeItems: "center",
+            color: "var(--brand-700)",
+            fontWeight: 800,
+            letterSpacing: "-0.03em",
+          }}
+        >
+          LMS·DUT
+        </div>
+      ) : children}
     </AuthContext.Provider>
   );
 }

@@ -1,89 +1,131 @@
-/* eslint-disable import/no-anonymous-default-export */
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { onSnapshot, query, where, collection } from "firebase/firestore";
 import { useAuth } from "../../../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
-// STYLES
-const Wrapper = styled.div`
+import { useNavigate, useParams } from "react-router-dom";
+import { FiCalendar, FiChevronRight } from "react-icons/fi";
+import { Card } from "../../styles/shared";
+
+const Widget = styled(Card)`
+  padding: 1.1rem clamp(0.9rem, 3vw, 1.25rem);
+  background: linear-gradient(
+    145deg,
+    rgba(236, 254, 255, 0.9) 0%,
+    var(--surface) 55%,
+    rgba(255, 251, 235, 0.55) 100%
+  );
+`;
+
+const Header = styled.div`
   display: flex;
-  flex-direction: column;
-  width: 20%;
-  max-width: 250px;
-  height: max-content;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.65rem;
+`;
 
-  border: 1px solid #ccc;
-  padding: 25px;
-  border-radius: 8px;
+const IconBadge = styled.span`
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-100);
+  color: var(--brand-700);
+  font-size: 1rem;
+`;
 
-  @media (max-width: 780px) {
-    display: none;
+const Title = styled.h2`
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--brand-700);
+  letter-spacing: -0.02em;
+`;
+
+const Message = styled.p`
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+
+  strong {
+    color: var(--accent-coral);
+    font-weight: 800;
   }
 `;
 
-const Title = styled.p`
-  color: #242424;
-  font-size: 1.2rem;
-`;
+const SeeAllLink = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brand-600);
+  transition: color 0.18s ease, gap 0.18s ease;
 
-const Informations = styled.p`
-  margin-top: 20px;
-  color: #4e4e4e;
-  font-size: 0.8rem;
-  line-height: 20px;
-`;
-
-const SeeAllTasks = styled.a`
-  text-decoration: none;
-  color: #3b3838;
-  font-weight: 600;
-  position: relative;
-
-  text-align: end;
-  font-size: 0.9rem;
-  margin-top: 20px;
-
-  :hover {
-    text-decoration: underline;
+  &:hover {
+    color: var(--brand-700);
+    gap: 0.4rem;
   }
 `;
 
-export default (props) => {
+export default function NextTask({ classID }) {
   const navigate = useNavigate();
-  const [num, setNum] = useState(0);
+  const { id } = useParams();
+  const [num, setNum] = useState(null);
   const { db, currentUser } = useAuth();
-
 
   useEffect(() => {
     const q = query(
       collection(db, "assignments"),
-      where("classID", "==", props.classID)
+      where("classID", "==", classID)
     );
-    const unsub = onSnapshot(q, async (querySnapshot) => {
-      let i = 0;
+    const unsub = onSnapshot(q, (querySnapshot) => {
+      let count = 0;
       querySnapshot.docs.forEach((ele) => {
         const data = ele.data();
-        const isSubmit = data.turnIns[currentUser.uid] ? true : false;
+        const isSubmit = Boolean(data.turnIns[currentUser.uid]);
         if (!(data.isClose || isSubmit)) {
-          i++;
+          count++;
         }
       });
-      setNum(i);
+      setNum(count);
     });
-    return () => {
-      unsub();
-    };
-  }, [props.classID]);
+    return () => unsub();
+  }, [classID, currentUser.uid, db]);
+
+  const isLoading = num === null;
 
   return (
-    <Wrapper>
-      <Title>Up coming</Title>
-      <Informations>
-        {num ? `Has ${num} work sue soon! ` : "Woohoo, no work due soon!"}
-      </Informations>
-      <SeeAllTasks onClick={() => navigate("../classwork")}>
+    <Widget aria-label="Upcoming assignments" aria-busy={isLoading}>
+      <Header>
+        <IconBadge aria-hidden="true">
+          <FiCalendar />
+        </IconBadge>
+        <Title>Upcoming</Title>
+      </Header>
+
+      <Message role="status">
+        {isLoading ? (
+          "Checking your assignments..."
+        ) : num > 0 ? (
+          <>
+            You have <strong>{num}</strong>{" "}
+            {num === 1 ? "assignment" : "assignments"} due soon!
+          </>
+        ) : (
+          "Woohoo — no work due soon!"
+        )}
+      </Message>
+
+      <SeeAllLink
+        type="button"
+        onClick={() => navigate(`/${id}/classwork`)}
+        aria-label="See all classwork assignments"
+      >
         See all tasks
-      </SeeAllTasks>
-    </Wrapper>
+        <FiChevronRight aria-hidden="true" />
+      </SeeAllLink>
+    </Widget>
   );
-};
+}

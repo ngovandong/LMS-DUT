@@ -1,88 +1,133 @@
+import { useRef, useState } from "react";
+import styled from "styled-components";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { IoMdSend } from "react-icons/io";
-import styled from "styled-components";
 import { errorDialogAtom, errorMessage } from "../../../../utils/atoms";
 import { useRecoilState } from "recoil";
-import {useState,useRef} from 'react'
-const Wrapper = styled.div`
+import { Card } from "../../styles/shared";
+
+const Composer = styled(Card)`
   display: flex;
-  width: 100%;
-  margin: 0 auto;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 2px 6px 2px rgb(60 64 67 / 15%);
-  height: 72px;
-  margin-bottom: 20px;
-  padding: 0;
-`;
-const Avatar = styled.img`
-  height: 40px;
-  width: 40px;
-  border-radius: 100%;
-  margin: 16px;
-`;
-const SendBT = styled.button`
-  height: 72px;
-  width: 72px;
-  transition: all 0.2s;
-  :hover {
-    border-radius: 50%;
-    background: #0000001a;
-  }
-`;
-const InputAnnounce = styled.input`
-  width: 100%;
-  border: none;
-  line-height: 100%;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem clamp(0.85rem, 3vw, 1.1rem);
+  min-width: 0;
 `;
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default (props) => {
+const Avatar = styled.img`
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--brand-100);
+`;
+
+const InputWrap = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.45rem 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--surface-border);
+  background: var(--surface-soft);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+
+  &:focus-within {
+    border-color: var(--brand-500);
+    box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.12);
+  }
+`;
+
+const Input = styled.input`
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+`;
+
+const SendButton = styled.button`
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ $active }) => ($active ? "var(--brand-600)" : "var(--text-muted)")};
+  background: ${({ $active }) => ($active ? "var(--brand-50)" : "transparent")};
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+
+  &:hover {
+    background: var(--brand-50);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+`;
+
+export default function Announcement({ classID }) {
   const [, setShow] = useRecoilState(errorDialogAtom);
   const [, setError] = useRecoilState(errorMessage);
   const { getPhoto, createAnnounce } = useAuth();
-  const [send, setSend] = useState(false);
-  const messageRef = useRef("");
+  const [canSend, setCanSend] = useState(false);
+  const messageRef = useRef(null);
+
   function handleSend() {
-    if(send){
-      try {
-        createAnnounce(messageRef.current.value, props.classID);
-        messageRef.current.value="";
-        setSend(false);
-      } catch (e) {
-        setError(e.message);
-        setShow(true);
-      }
+    if (!canSend || !messageRef.current) return;
+    try {
+      createAnnounce(messageRef.current.value, classID);
+      messageRef.current.value = "";
+      setCanSend(false);
+    } catch (e) {
+      setError(e.message);
+      setShow(true);
     }
   }
-  function hanldeChange(){
-    if(messageRef.current.value!==""){
-      setSend(true);
-    }else{
-      setSend(false);
-    }
+
+  function handleChange() {
+    setCanSend(Boolean(messageRef.current?.value.trim()));
   }
-  function enter(e){
-    if(e.keyCode===13){
+
+  function handleKeyDown(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
       handleSend();
     }
-    
   }
+
   return (
-    <Wrapper>
-      <div style={{ display: "flex", width: "90%" }}>
-        <Avatar src={getPhoto()} />
-        <div style={{ width: "100%", display: "flex" }}>
-          <InputAnnounce
-            onChange={hanldeChange}
-            onKeyDown={enter}
-            ref={messageRef}
-            placeholder="Announce something to class"
-          ></InputAnnounce>
-        </div>
-      </div>
-      <SendBT onClick={handleSend}>
-        <IoMdSend size={25} color={send?"#007b83":"#9aa0a6"} />
-      </SendBT>
-    </Wrapper>
+    <Composer aria-label="Create class announcement">
+      <Avatar src={getPhoto()} alt="" aria-hidden="true" />
+      <InputWrap>
+        <Input
+          ref={messageRef}
+          type="text"
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Announce something to your class..."
+          aria-label="Announcement message"
+        />
+        <SendButton
+          type="button"
+          onClick={handleSend}
+          disabled={!canSend}
+          $active={canSend}
+          aria-label="Post announcement"
+        >
+          <IoMdSend size={20} aria-hidden="true" />
+        </SendButton>
+      </InputWrap>
+    </Composer>
   );
-};
+}

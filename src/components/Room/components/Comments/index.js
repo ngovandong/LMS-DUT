@@ -2,69 +2,68 @@ import React from "react";
 import styled from "styled-components";
 import getTime from "../../../../funtions/getRelativeTime";
 
-const Wrapper = styled.div`
-  position: relative;
-  padding: 20px;
-
-  :hover button {
-    visibility: visible;
-  }
+const Comment = styled.article`
+  display: flex;
+  gap: 0.65rem;
+  padding: 0.75rem clamp(0.9rem, 3vw, 1.25rem);
+  min-width: 0;
 `;
 
 const Avatar = styled.img`
-  height: 40px;
-  width: 40px;
-  border-radius: 100%;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--surface-border);
+`;
+
+const Body = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const Meta = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-bottom: 0.2rem;
 `;
 
 const Name = styled.span`
-  display: flex;
-  align-items: center;
-  position: absolute;
-  top: 30px;
-  left: 70px;
-  text-transform: uppercase;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: capitalize;
 `;
 
-const Date = styled.span`
-  text-transform: lowercase;
-  margin-left: 5px;
-  color: #4e4e4e;
-  font-size: 0.8rem;
+const Date = styled.time`
+  font-size: 0.74rem;
+  color: var(--text-muted);
 `;
 
 const CommentText = styled.p`
-  position: relative;
-  margin-left: 50px;
-  margin-top: -5px;
-  font-size: 0.85rem;
-  color: #4e4e4e;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  hyphens: auto;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 `;
 
-// const ReplyButton = styled.button`
-//   visibility: hidden;
-//   position: absolute;
-//   right: 5px;
-//   top: 30px;
-// `;
-
-// eslint-disable-next-line import/no-anonymous-default-export
-export default ({ data }) => {
+export default function Comments({ data }) {
   return (
-    <Wrapper>
-      <Avatar src={data.photo} />
-      <Name>
-        {data.name} <Date>{getTime(data.date)}</Date>{" "}
-      </Name>
-      <CommentText>{data.message}</CommentText>
-
-      {/* <ReplyButton>
-      <IoIosUndo size={20} color="#4e4e4e"/>
-    </ReplyButton> */}
-    </Wrapper>
+    <Comment aria-label={`Comment by ${data.name}`}>
+      <Avatar src={data.photo} alt="" aria-hidden="true" />
+      <Body>
+        <Meta>
+          <Name>{data.name}</Name>
+          <Date dateTime={new Date(data.date).toISOString()}>
+            {getTime(data.date)}
+          </Date>
+        </Meta>
+        <CommentText>{data.message}</CommentText>
+      </Body>
+    </Comment>
   );
-};
+}

@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { IoMdHome } from "react-icons/io";
 
 // STYLES
-import { Menu, WrapperMenu } from "./styles";
+import { Backdrop, Menu, WrapperMenu } from "./styles";
 
 // API
 import { useAuth } from "../../../contexts/AuthContext";
@@ -22,27 +22,31 @@ export default ({ hide, handleClick }) => {
       where("uid", "==", currentUser.uid)
     );
     const unsub = onSnapshot(q, async (querySnapshot) => {
-      setClasses(querySnapshot.docs[0].data().enrolledClassrooms);
+      const profile = querySnapshot.docs[0]?.data();
+      setClasses(profile?.enrolledClassrooms || []);
     });
     return () => unsub();
-  }, [currentUser]);
+  }, [currentUser, db]);
   function handle() {
     handleClick();
   }
   return (
-    <Menu show={hide}>
-      <WrapperMenu>
-        <Link to="/">
-          <IoMdHome size={30} color="#4d4848" />
-          Home
-        </Link>
-        {classes.map((menuLine) => (
-          <Link to={`/${menuLine.id}`} key={menuLine.id} onClick={handle}>
-            <img src={menuLine.creatorPhoto} alt={menuLine.creatorName}></img>
-            <span>{menuLine.name}</span>
+    <>
+      <Backdrop show={hide} onClick={handle} aria-label="Close navigation menu" />
+      <Menu show={hide} aria-hidden={!hide}>
+        <WrapperMenu>
+          <Link to="/" onClick={handle}>
+            <IoMdHome size={26} color="var(--brand-600)" />
+            Home
           </Link>
-        ))}
-      </WrapperMenu>
-    </Menu>
+          {classes.map((menuLine) => (
+            <Link to={`/${menuLine.id}`} key={menuLine.id} onClick={handle}>
+              <img src={menuLine.creatorPhoto} alt="" />
+              <span>{menuLine.name}</span>
+            </Link>
+          ))}
+        </WrapperMenu>
+      </Menu>
+    </>
   );
 };

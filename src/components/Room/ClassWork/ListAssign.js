@@ -1,88 +1,81 @@
 import { Row } from "../Material/index";
+import {
+  RowMain,
+  RowMeta,
+  RowTitle,
+  IconCircle,
+  IconActionButton,
+} from "../styles/shared";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import React, { useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "react-router";
 import styled from "styled-components";
 import { MdAssignment } from "react-icons/md";
 import { useAuth } from "../../../contexts/AuthContext";
 
-export default function ListAssign(props) {
+const AssignmentCircle = styled(IconCircle)`
+  background: ${({ $muted }) =>
+    $muted
+      ? "linear-gradient(135deg, #94a3b8, #64748b)"
+      : "linear-gradient(135deg, var(--brand-500), var(--brand-600))"};
+`;
+
+const MenuButton = styled(IconActionButton)`
+  color: var(--brand-600);
+`;
+
+export default function ListAssign({
+  assignID,
+  name,
+  dueTime,
+  isAuthor,
+  isSilver,
+}) {
   const navigate = useNavigate();
 
   function handleClick() {
-    navigate(`../assignments/${props.assignID}`);
+    navigate(`../assignments/${assignID}`);
   }
 
-  const Circle = styled.div`
-    height: 40px;
-    width: 40px;
-    border-radius: 100%;
-    margin: auto 5px;
-    background-color: ${props.isSilver
-      ? "rgba(0,0,0,0.24)!important"
-      : "#129eaf"};
-    display: flex;
-    justify-content: center;
-    padding-top: 7px;
-  `;
-
   return (
-    <Row onClick={handleClick}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "660px",
-        }}
-      >
-        <div style={{ display: "flex" }}>
-          <Circle>
-            <MdAssignment size={25} color="#fff" />
-          </Circle>
-          <span
-            style={{
-              margin: "auto 0.5rem",
-              fontFamily: "Arial,sans-serif",
-              fontWeight: "500",
-              fontSize: "0.9rem",
-              width: "400px",
-            }}
-          >
-            {props.name}
-          </span>
-        </div>
-        <div style={{ display: "flex" }}>
-          <span
-            style={{
-              margin: "auto 0.5rem",
-              fontFamily: "Arial,sans-serif",
-              fontWeight: "500",
-              fontSize: "0.75rem",
-              letterSpacing: "0.03rem",
-              color: "rgba(0,0,0,0.549)",
-            }}
-          >
-            {props.dueTime}
-          </span>
-        </div>
-      </div>
-      {props.isAuthor && <ThreeDotMenu assignID={props.assignID} />}
+    <Row
+      $clickable
+      onClick={handleClick}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      aria-label={`${name}, ${dueTime || "assignment"}`}
+    >
+      <RowMain>
+        <AssignmentCircle $muted={isSilver} aria-hidden="true">
+          <MdAssignment size={20} color="#fff" />
+        </AssignmentCircle>
+        <RowTitle>{name}</RowTitle>
+      </RowMain>
+      {dueTime && <RowMeta>{dueTime}</RowMeta>}
+      {isAuthor && <ThreeDotMenu assignID={assignID} />}
     </Row>
   );
 }
 
-function ThreeDotMenu(props) {
+function ThreeDotMenu({ assignID }) {
   const { closeAssign, deleteAssign } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+
   const handleClick = (event) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = (e) => {
     e.stopPropagation();
     setAnchorEl(null);
@@ -91,41 +84,47 @@ function ThreeDotMenu(props) {
   function handleCloseAssign(e) {
     e.stopPropagation();
     setAnchorEl(null);
-    closeAssign(props.assignID);
+    closeAssign(assignID);
   }
+
   function handleDeleteAssign(e) {
     e.stopPropagation();
     setAnchorEl(null);
-    deleteAssign(props.assignID);
+    deleteAssign(assignID);
   }
+
   function handleEditAssign(e) {
     e.stopPropagation();
     setAnchorEl(null);
-    navigate(`../updateAssigment/${props.assignID}`);
+    navigate(`../updateAssigment/${assignID}`);
   }
+
   function handleViewWork(e) {
     e.stopPropagation();
     setAnchorEl(null);
-    navigate(`../viewWork/${props.assignID}`);
+    navigate(`../viewWork/${assignID}`);
   }
+
   return (
-    <div>
-      <IconButton
-        id="basic-button"
-        aria-controls="basic-menu"
+    <div onClick={(e) => e.stopPropagation()}>
+      <MenuButton
+        type="button"
+        id={`assignment-menu-${assignID}`}
+        aria-controls={open ? `assignment-menu-list-${assignID}` : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
+        aria-label="Assignment options"
         onClick={handleClick}
       >
-        <BsThreeDotsVertical size={20} color="#007b83" />
-      </IconButton>
+        <BsThreeDotsVertical size={18} aria-hidden="true" />
+      </MenuButton>
       <Menu
-        id="basic-menu"
+        id={`assignment-menu-list-${assignID}`}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
         MenuListProps={{
-          "aria-labelledby": "basic-button",
+          "aria-labelledby": `assignment-menu-${assignID}`,
         }}
       >
         <MenuItem onClick={handleViewWork}>Class work</MenuItem>

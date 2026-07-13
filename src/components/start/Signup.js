@@ -1,25 +1,32 @@
 import React, { useRef, useState } from "react";
-import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { BsGoogle } from "react-icons/bs";
-import { Link, useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import logo from "../../img/Logodhbk.jpg";
+import { useNavigate } from "react-router-dom";
+import AuthLayout from "./shared/AuthLayout";
+import AuthField from "./shared/AuthField";
+import {
+  AuthForm,
+  AuthAlert,
+  PrimaryButton,
+  GoogleButton,
+  AuthDivider,
+} from "./shared/authStyles";
 
 export default function Signup() {
   const emailRef = useRef();
   const passwordRef = useRef();
-  const usernameRef = useRef(); 
+  const usernameRef = useRef();
   const passwordConfirmRef = useRef();
   const { signup, signInWithGoogle } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (passwordRef.current.value !== passwordConfirmRef.current.value) {
-      return setError("Passwords do not match!");
+      return setError("Passwords do not match.");
     }
     try {
       setError("");
@@ -35,95 +42,88 @@ export default function Signup() {
     }
     setLoading(false);
   }
+
   async function googleLogin(e) {
     e.preventDefault();
     try {
+      setError("");
+      setGoogleLoading(true);
       await signInWithGoogle();
       navigate("/");
     } catch (error) {
-      window.alert("Fail to log in!");
+      setError("Failed to sign in with Google. Please try again.");
     }
+    setGoogleLoading(false);
   }
+
   return (
-    <div style={{ height: "100vh", marginTop: "-5.7rem" }}>
-      <div
-        className="d-flex align-items-center justify-content-center"
-        style={{ height: "20%", flexDirection: "column" }}
-      >
-        <img
-          src={logo}
-          style={{
-            width: "auto",
-            height: "70%",
-            margin: "20px",
-            paddingTop: "20px",
-          }}
-          alt=""
+    <AuthLayout
+      title="Create account"
+      subtitle="Join your classes and start learning in minutes."
+      footerText="Already have an account?"
+      footerLinkText="Log in"
+      footerLinkTo="/login"
+    >
+      {error && (
+        <AuthAlert $variant="danger" role="alert">
+          {error}
+        </AuthAlert>
+      )}
+
+      <AuthForm onSubmit={handleSubmit} noValidate>
+        <AuthField
+          id="signup-username"
+          label="Display name"
+          type="text"
+          inputRef={usernameRef}
+          required
+          autoComplete="name"
+          placeholder="How should we call you?"
         />
-        <h4>LMS-DUT</h4>
-      </div>
-      <div
-        className="d-flex align-items-center justify-content-center"
-        style={{ height: "80%" }}
-      >
-        <div>
-          <Card className="shadow p-3 mb-5 bg-white rounded">
-            <Card.Body>
-              <h2 className=" text-center mb-4">Sign Up</h2>
-              {error && <Alert variant="danger">{error}</Alert>}
-              <Form onSubmit={handleSubmit}>
-                <Form.Group id="usernameRef">
-                  <Form.Label>User name</Form.Label>
-                  <Form.Control type="text" ref={usernameRef} required />
-                </Form.Group>
-                <Form.Group id="email">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control type="email" ref={emailRef} required />
-                </Form.Group>
-                <Form.Group id="password">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control type="password" ref={passwordRef} required />
-                </Form.Group>
-                <Form.Group id="password-confirm">
-                  <Form.Label>Passwrod Confirmation</Form.Label>
-                  <Form.Control
-                    type="password"
-                    ref={passwordConfirmRef}
-                    required
-                  />
-                </Form.Group>
-                <br />
-                <Button
-                  disabled={loading}
-                  className="w-100 text-uppercase fw-bold"
-                  type="submit"
-                >
-                  Sign Up
-                </Button>
-                <br />
-                <br />
-                <Button
-                  className="w-100 text-uppercase fw-bold"
-                  style={{ backgroundColor: "#ea4335", border: "0" }}
-                  onClick={googleLogin}
-                >
-                  <BsGoogle style={{ margin: "0 8px 4px" }} /> Log in with
-                  Google
-                </Button>
-              </Form>
-            </Card.Body>
-          </Card>
-          <div className="w-100 text-center mt-2">
-            Already has an account?
-            <Link
-              to="/login"
-              style={{ textDecoration: "none", marginLeft: "5px" }}
-            >
-              Log In
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+        <AuthField
+          id="signup-email"
+          label="Email"
+          type="email"
+          inputRef={emailRef}
+          required
+          autoComplete="email"
+          placeholder="you@university.edu"
+        />
+        <AuthField
+          id="signup-password"
+          label="Password"
+          type="password"
+          inputRef={passwordRef}
+          required
+          autoComplete="new-password"
+          placeholder="Create a strong password"
+        />
+        <AuthField
+          id="signup-password-confirm"
+          label="Confirm password"
+          type="password"
+          inputRef={passwordConfirmRef}
+          required
+          autoComplete="new-password"
+          placeholder="Re-enter your password"
+        />
+
+        <PrimaryButton type="submit" disabled={loading || googleLoading}>
+          {loading ? "Creating account…" : "Sign up"}
+        </PrimaryButton>
+
+        <AuthDivider>or</AuthDivider>
+
+        <GoogleButton
+          type="button"
+          onClick={googleLogin}
+          disabled={loading || googleLoading}
+          aria-label="Sign up with Google"
+        >
+          <BsGoogle aria-hidden="true" />
+          {googleLoading ? "Connecting…" : "Continue with Google"}
+        </GoogleButton>
+      </AuthForm>
+    </AuthLayout>
   );
 }

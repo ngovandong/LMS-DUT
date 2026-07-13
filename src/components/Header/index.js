@@ -29,6 +29,8 @@ function Header() {
             style={{ lineHeight: "100%" }}
             show={showHamburguer}
             onClick={(e) => onClickHamburguer(e)}
+            aria-label={showHamburguer ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={showHamburguer}
           >
             <div></div>
             <div></div>
@@ -36,17 +38,19 @@ function Header() {
           </HamburguerButton>
 
           <Link
+            className="brand-name"
             to="/"
             style={{
               margin: "0 15px",
               textDecoration: "none",
               fontSize: "1.375rem",
-              fontWeight: "400",
+              fontWeight: "800",
               lineHeight: "1.75rem",
-              color: "#3c4043",
+              color: "var(--text-primary)",
+              letterSpacing: "-0.04em",
             }}
           >
-            LMS-DUT
+            LMS<span style={{ color: "var(--brand-500)" }}>·DUT</span>
           </Link>
         </div>
         <div className="groupButtons">
@@ -80,6 +84,8 @@ export function HeaderClass(props) {
             style={{ lineHeight: "100%" }}
             show={showHamburguer}
             onClick={(e) => onClickHamburguer(e)}
+            aria-label={showHamburguer ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={showHamburguer}
           >
             <div></div>
             <div></div>
@@ -87,17 +93,19 @@ export function HeaderClass(props) {
           </HamburguerButton>
 
           <Link
+            className="brand-name"
             to="/"
             style={{
               margin: "0 15px",
               textDecoration: "none",
               fontSize: "1.375rem",
-              fontWeight: "400",
+              fontWeight: "800",
               lineHeight: "1.75rem",
-              color: "#3c4043",
+              color: "var(--text-primary)",
+              letterSpacing: "-0.04em",
             }}
           >
-            LMS-DUT
+            LMS<span style={{ color: "var(--brand-500)" }}>·DUT</span>
           </Link>
         </div>
 
@@ -105,7 +113,7 @@ export function HeaderClass(props) {
 
         <div style={{ display: "flex", height: "100%", alignItems: "center" }}>
           {props.isAuthor && (
-            <HeaderButton className="addBtn" onClick={handleUpdate}>
+            <HeaderButton className="addBtn" onClick={handleUpdate} aria-label="Class settings">
               <IoMdSettings size={25} color="rgb(77, 72, 72)" />
             </HeaderButton>
           )}

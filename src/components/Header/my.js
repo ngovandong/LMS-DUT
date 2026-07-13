@@ -41,8 +41,14 @@ export default function My() {
       <HeaderAvatar
         className="imgAvatar"
         src={getPhoto()}
-        alt="Unknown"
+        alt="Open profile menu"
         onClick={handleClick}
+        role="button"
+        tabIndex={0}
+        aria-label="Open profile menu"
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") handleClick(event);
+        }}
       />
 
       <Menu
@@ -60,7 +66,7 @@ export default function My() {
             handleUpdate();
           }}
         >
-          Update infor
+          Update profile
         </MenuItem>
         <MenuItem
           onClick={() => {

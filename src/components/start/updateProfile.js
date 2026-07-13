@@ -1,9 +1,15 @@
 import React, { useRef, useState } from "react";
-import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import logo from "../../img/Logodhbk.jpg";
+import AuthLayout from "./shared/AuthLayout";
+import AuthField from "./shared/AuthField";
+import {
+  AuthForm,
+  AuthAlert,
+  PrimaryButton,
+  InlineLinkRow,
+  AuthLink,
+} from "./shared/authStyles";
 
 export default function UpdateProfile() {
   const emailRef = useRef();
@@ -17,7 +23,7 @@ export default function UpdateProfile() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (passwordRef.current.value !== passwordConfirmRef.current.value) {
-      return setError("Passwords do not match!");
+      return setError("Passwords do not match.");
     }
     try {
       setError("");
@@ -26,79 +32,61 @@ export default function UpdateProfile() {
       navigate("/");
     } catch (error) {
       console.log(error);
-      setError("Fail to update an account!");
+      setError("Failed to update your account. Please try again.");
     }
     setLoading(false);
   }
+
   return (
-    <div style={{ height: "100vh", marginTop: "-5.7rem" }}>
-      <div
-        className="d-flex align-items-center justify-content-center"
-        style={{ height: "20%", flexDirection: "column" }}
-      >
-        <img
-          src={logo}
-          style={{
-            width: "auto",
-            height: "70%",
-            margin: "20px",
-            paddingTop: "20px",
-          }}
-          alt=""
+    <AuthLayout
+      title="Update profile"
+      subtitle="Change your password while keeping the same email."
+    >
+      {error && (
+        <AuthAlert $variant="danger" role="alert">
+          {error}
+        </AuthAlert>
+      )}
+
+      <AuthForm onSubmit={handleSubmit} noValidate>
+        <AuthField
+          id="profile-email"
+          label="Email"
+          type="email"
+          inputRef={emailRef}
+          readOnly
+          defaultValue={currentUser?.email}
+          autoComplete="email"
         />
-        <h4>LMS-DUT</h4>
-      </div>
-      <div
-        className="d-flex align-items-center justify-content-center"
-        style={{ height: "80%" }}
-      >
-        <div>
-          <Card className="shadow p-3 mb-5 bg-white rounded">
-            <Card.Body>
-              <h2 className=" text-center mb-4">Update profile</h2>
-              {error && <Alert variant="danger">{error}</Alert>}
-              <Form onSubmit={handleSubmit}>
-                <Form.Group id="email">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    type="email"
-                    ref={emailRef}
-                    readOnly="true"
-                    defaultValue={currentUser.email}
-                  />
-                </Form.Group>
-                <Form.Group id="password">
-                  <Form.Label>New Password</Form.Label>
-                  <Form.Control type="password" ref={passwordRef} required />
-                </Form.Group>
-                <Form.Group id="password-confirm">
-                  <Form.Label>Password Confirmation</Form.Label>
-                  <Form.Control
-                    type="password"
-                    ref={passwordConfirmRef}
-                    required
-                  />
-                </Form.Group>
-                <br />
-                <Button
-                  disabled={loading}
-                  className="w-100 text-uppercase fw-bold"
-                  type="submit"
-                >
-                  Update
-                </Button>
-                <br />
-                <br />
-              </Form>
-            </Card.Body>
-          </Card>
-          <div className="w-100 text-center mt-2">
-            <Link to="/" style={{ textDecoration: "none", marginLeft: "5px" }}>
-              Back
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+        <AuthField
+          id="profile-password"
+          label="New password"
+          type="password"
+          inputRef={passwordRef}
+          required
+          autoComplete="new-password"
+          placeholder="Enter a new password"
+        />
+        <AuthField
+          id="profile-password-confirm"
+          label="Confirm password"
+          type="password"
+          inputRef={passwordConfirmRef}
+          required
+          autoComplete="new-password"
+          placeholder="Re-enter your new password"
+        />
+
+        <PrimaryButton type="submit" disabled={loading}>
+          {loading ? "Saving…" : "Save changes"}
+        </PrimaryButton>
+
+        <InlineLinkRow>
+          <AuthLink as={Link} to="/">
+            Back to dashboard
+          </AuthLink>
+        </InlineLinkRow>
+      </AuthForm>
+    </AuthLayout>
   );
 }
